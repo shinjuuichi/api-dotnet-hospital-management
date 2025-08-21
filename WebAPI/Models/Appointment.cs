@@ -1,0 +1,21 @@
+using WebAPI.Models.EntityAbstractions;
+using WebAPI.Models.Enums;
+
+namespace WebAPI.Models;
+
+public class Appointment : BaseEntity
+{
+    public DateTime ScheduledTime { get; set; }
+
+    public AppointmentStatusEnum Status { get; set; } = AppointmentStatusEnum.Pending;
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public int PatientId { get; set; }
+
+    public int? DoctorId { get; set; }
+
+    public Patient Patient { get; set; } = null!;
+    public Doctor? Doctor { get; set; }
+    public Prescription? Prescription { get; set; }
+}
