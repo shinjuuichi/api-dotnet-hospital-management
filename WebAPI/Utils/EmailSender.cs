@@ -3,22 +3,20 @@ using System.Net.Mail;
 
 namespace WebAPI.Utils;
 
-public interface IEmailSender
+public static class EmailSender
 {
-    Task SendEmailAsync(string toEmail, string subject, string body);
-}
+    private static IConfiguration? _configuration;
 
-public class EmailSender : IEmailSender
-{
-    private readonly IConfiguration _configuration;
-
-    public EmailSender(IConfiguration configuration)
+    public static void Initialize(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    public async Task SendEmailAsync(string toEmail, string subject, string body)
+    public static async Task SendEmailAsync(string toEmail, string subject, string body)
     {
+        if (_configuration == null)
+            throw new InvalidOperationException("EmailSender not initialized. Call Initialize() first.");
+
         var smtpHost = _configuration["Email:SmtpHost"] ?? "smtp.gmail.com";
         var smtpPort = int.Parse(_configuration["Email:SmtpPort"] ?? "587");
         var fromEmail = _configuration["Email:FromEmail"] ?? "noreply@clinic.com";

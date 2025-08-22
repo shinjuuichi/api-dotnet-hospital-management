@@ -11,6 +11,8 @@ public class User : AuditableEntity
 
     public string Password { get; set; } = string.Empty;
 
+    public bool IsVerified { get; set; }
+
     public RoleEnum Role { get; set; }
 
     public Doctor? Doctor { get; set; }

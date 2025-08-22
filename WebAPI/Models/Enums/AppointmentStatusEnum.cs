@@ -1,4 +1,4 @@
-﻿namespace WebAPI.Models.Enums
+﻿namespace WebAPI.Models.Enum
 {
     public enum AppointmentStatusEnum
     {

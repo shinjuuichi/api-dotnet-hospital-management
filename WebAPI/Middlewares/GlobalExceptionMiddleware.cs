@@ -26,6 +26,11 @@ public class GlobalExceptionMiddleware
 
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
+        if (context.Response.HasStarted)
+        {
+            return;
+        }
+
         var response = context.Response;
         response.ContentType = "application/json";
 
@@ -84,7 +89,7 @@ public class GlobalExceptionMiddleware
                 errorResponse = errorResponse with
                 {
                     code = 500,
-                    message = "An internal server error occurred",
+                    message = $"An internal server error occurred: {exception.Message}",
                     status = "error"
                 };
                 break;
@@ -95,6 +100,13 @@ public class GlobalExceptionMiddleware
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
 
-        await response.WriteAsync(jsonResponse);
+        try
+        {
+            await response.WriteAsync(jsonResponse);
+        }
+        catch (ObjectDisposedException)
+        { }
+        catch (InvalidOperationException)
+        { }
     }
 }
