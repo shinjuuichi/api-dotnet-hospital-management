@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using WebAPI.Models.EntityAbstractions;
-using WebAPI.Models.Enum;
 
 namespace WebAPI.Models;
 
@@ -15,13 +14,6 @@ public class Doctor : AuditableEntity
     [Required(ErrorMessage = "Bio is required")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Bio must be between 2 and 100 characters")]
     public string? Bio { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Gender is required")]
-    [EnumDataType(typeof(GenderEnum), ErrorMessage = "Invalid gender selected")]
-    public GenderEnum Gender { get; set; }
-
-    [DataType(DataType.Date, ErrorMessage = "Please enter a valid date of birth")]
-    public DateTime? DateOfBirth { get; set; }
 
     [Required(ErrorMessage = "Year of Experience is required")]
     [Range(0, int.MaxValue, ErrorMessage = "Year of Experience must be a positive number")]

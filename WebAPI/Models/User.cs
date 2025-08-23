@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using WebAPI.Models.EntityAbstractions;
 using WebAPI.Models.Enum;
 
@@ -7,7 +7,6 @@ namespace WebAPI.Models;
 
 [Index(nameof(Email), IsUnique = true, Name = "IX_Users_Email_Unique")]
 [Index(nameof(PhoneNumber), IsUnique = true, Name = "IX_Users_PhoneNumber_Unique")]
-
 public class User : AuditableEntity
 {
     [Required(ErrorMessage = "Full name is required")]

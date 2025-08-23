@@ -8,7 +8,7 @@ public class PrescriptionDetail : BaseEntity
     [Required(ErrorMessage = "Quantity is required")]
     [StringLength(50, MinimumLength = 1, ErrorMessage = "Quantity must be between 1 and 50 characters")]
     public string Quantity { get; set; } = string.Empty;
-    
+
     [StringLength(500, ErrorMessage = "Usage instruction cannot exceed 500 characters")]
     public string? UsageInstruction { get; set; }
 
