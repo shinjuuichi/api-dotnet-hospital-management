@@ -13,21 +13,18 @@ namespace WebAPI.Data.Seeds
                 {
                     Id = 1,
                     Name = "Cardiology",
-                    Description = "Heart and cardiovascular system specialists",
                     CreationDate = DateTime.UtcNow
                 },
                 new Specialty
                 {
                     Id = 2,
                     Name = "Neurology",
-                    Description = "Brain and nervous system specialists",
                     CreationDate = DateTime.UtcNow
                 },
                 new Specialty
                 {
                     Id = 3,
                     Name = "Pediatrics",
-                    Description = "Medical care for infants, children, and adolescents",
                     CreationDate = DateTime.UtcNow
                 }
             );

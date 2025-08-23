@@ -36,18 +36,15 @@ public class ResponseWrappingMiddleware
 
     private static bool ShouldWrapResponse(HttpContext context)
     {
-        // Don't wrap if already processed by exception middleware
         if (context.Response.HasStarted)
             return false;
 
-        // Don't wrap swagger/static files
         var path = context.Request.Path.Value?.ToLower() ?? "";
-        if (path.Contains("/swagger") || path.Contains("/api-docs") || 
-            path.Contains(".js") || path.Contains(".css") || 
+        if (path.Contains("/swagger") || path.Contains("/api-docs") ||
+            path.Contains(".js") || path.Contains(".css") ||
             path.Contains(".html") || path.Contains(".ico"))
             return false;
 
-        // Only wrap API responses
         return context.Request.Path.StartsWithSegments("/api");
     }
 
@@ -87,7 +84,7 @@ public class ResponseWrappingMiddleware
         });
 
         response.ContentType = "application/json";
-        response.ContentLength = null; // Let it be calculated automatically
+        response.ContentLength = null;
         await response.WriteAsync(jsonResponse);
     }
 

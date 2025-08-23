@@ -4,12 +4,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using WebAPI.Data;
-using WebAPI.Mapping;
 using WebAPI.Repositories.Implements;
 using WebAPI.Repositories.Interfaces;
-using WebAPI.Services.Implements;
-using WebAPI.Services.Interfaces;
-using WebAPI.Utils.Query;
 
 namespace WebAPI
 {
@@ -33,13 +29,6 @@ namespace WebAPI
 
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAppointmentService, AppointmentService>();
-            services.AddScoped<ISpecialtyService, SpecialtyService>();
-            services.AddScoped<IDoctorService, DoctorService>();
-            services.AddScoped<IMedicineService, MedicineService>();
-            services.AddScoped<IPrescriptionService, PrescriptionService>();
 
             return services;
         }
@@ -50,13 +39,6 @@ namespace WebAPI
             {
                 options.Configuration = configuration.GetConnectionString("RedisConnection");
             });
-
-            return services;
-        }
-
-        public static IServiceCollection AddAutoMapperService(this IServiceCollection services)
-        {
-            services.AddAutoMapper(typeof(MappingProfile));
 
             return services;
         }
@@ -88,17 +70,6 @@ namespace WebAPI
             return services;
         }
 
-        public static IServiceCollection AddControllersWithFilters(this IServiceCollection services)
-        {
-            services.AddControllers(options =>
-            {
-                options.Filters.Add<QueryOptionsFilter>();
-            });
-
-            services.AddEndpointsApiExplorer();
-
-            return services;
-        }
 
         public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
         {
@@ -160,9 +131,7 @@ namespace WebAPI
                    .AddRepositories()
                    .AddBusinessServices()
                    .AddCaching(configuration)
-                   .AddAutoMapperService()
                    .AddJwtAuthentication(configuration)
-                   .AddControllersWithFilters()
                    .AddSwaggerDocumentation()
                    .AddCorsPolicy();
 
