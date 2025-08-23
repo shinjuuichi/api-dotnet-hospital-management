@@ -7,9 +7,8 @@ namespace WebAPI.Models;
 [Index(nameof(InsuranceNo), IsUnique = true, Name = "IX_Patients_InsuranceNo_Unique")]
 public class Patient : AuditableEntity
 {
-    [Required(ErrorMessage = "Insurance number is required")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Insurance number must be between 2 and 100 characters")]
-    public string InsuranceNo { get; set; } = string.Empty;
+    public string? InsuranceNo { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Address is required")]
     [StringLength(500, MinimumLength = 5, ErrorMessage = "Address must be between 5 and 500 characters")]

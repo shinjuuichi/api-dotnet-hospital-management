@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using WebAPI.Models.Enum;
+using WebAPI.Utils;
 
 namespace WebAPI.Data.Seeds
 {
@@ -8,25 +9,12 @@ namespace WebAPI.Data.Seeds
     {
         public static void SeedUsers(ModelBuilder modelBuilder)
         {
+            var seededAt = new DateTime(2025, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+
             modelBuilder.Entity<Specialty>().HasData(
-                new Specialty
-                {
-                    Id = 1,
-                    Name = "Cardiology",
-                    CreationDate = DateTime.UtcNow
-                },
-                new Specialty
-                {
-                    Id = 2,
-                    Name = "Neurology",
-                    CreationDate = DateTime.UtcNow
-                },
-                new Specialty
-                {
-                    Id = 3,
-                    Name = "Pediatrics",
-                    CreationDate = DateTime.UtcNow
-                }
+                new Specialty { Id = 1, Name = "Cardiology", CreationDate = seededAt, IsDeleted = false },
+                new Specialty { Id = 2, Name = "Neurology", CreationDate = seededAt, IsDeleted = false },
+                new Specialty { Id = 3, Name = "Pediatrics", CreationDate = seededAt, IsDeleted = false }
             );
 
             modelBuilder.Entity<User>().HasData(
@@ -34,31 +22,40 @@ namespace WebAPI.Data.Seeds
                 {
                     Id = 1,
                     FullName = "John Manager",
-                    Email = "manager@hospital.com",
-                    Password = BCrypt.Net.BCrypt.HashPassword("Manager123!"),
+                    Email = "manager@gmail.com",
+                    Password = CryptoPassword.EncryptPassword("Admin@123"),
+                    PhoneNumber = "0900000001",
+                    DateOfBirth = new DateTime(1980, 5, 12),
+                    Gender = GenderEnum.Male,
                     Role = RoleEnum.Manager,
                     IsVerified = true,
-                    CreationDate = DateTime.UtcNow
+                    CreationDate = seededAt,
                 },
                 new User
                 {
                     Id = 2,
                     FullName = "Dr. Sarah Wilson",
                     Email = "sarah.wilson@hospital.com",
-                    Password = BCrypt.Net.BCrypt.HashPassword("Doctor123!"),
+                    Password = CryptoPassword.EncryptPassword("Admin@123"),
+                    PhoneNumber = "0900000002",
+                    DateOfBirth = new DateTime(1985, 6, 15),
+                    Gender = GenderEnum.Female,
                     Role = RoleEnum.Doctor,
                     IsVerified = true,
-                    CreationDate = DateTime.UtcNow
+                    CreationDate = seededAt,
                 },
                 new User
                 {
                     Id = 3,
                     FullName = "Alice Johnson",
                     Email = "alice.johnson@email.com",
-                    Password = BCrypt.Net.BCrypt.HashPassword("Patient123!"),
+                    Password = CryptoPassword.EncryptPassword("Admin@123"),
+                    PhoneNumber = "0900000003",
+                    DateOfBirth = new DateTime(1995, 3, 20),
+                    Gender = GenderEnum.Female,
                     Role = RoleEnum.Customer,
                     IsVerified = true,
-                    CreationDate = DateTime.UtcNow
+                    CreationDate = seededAt,
                 }
             );
 
@@ -66,13 +63,10 @@ namespace WebAPI.Data.Seeds
                 new Doctor
                 {
                     Id = 1,
-                    LicenseNumber = "MD-001-2023",
-                    PhoneNumber = "+1-555-0101",
-                    Gender = GenderEnum.Female,
-                    DateOfBirth = new DateTime(1980, 5, 15),
+                    LicenseNo = "MD-001-2023",
                     UserId = 2,
                     SpecialtyId = 1,
-                    CreationDate = DateTime.UtcNow
+                    CreationDate = seededAt,
                 }
             );
 
@@ -80,12 +74,10 @@ namespace WebAPI.Data.Seeds
                 new Patient
                 {
                     Id = 1,
-                    PhoneNumber = "+1-555-0201",
-                    DateOfBirth = new DateTime(1990, 3, 10),
-                    Gender = GenderEnum.Female,
+                    InsuranceNo = "INS-123456",
                     Address = "123 Main Street, Anytown, ST 12345",
                     UserId = 3,
-                    CreationDate = DateTime.UtcNow
+                    CreationDate = seededAt,
                 }
             );
         }
