@@ -4,13 +4,9 @@ namespace WebAPI.Models;
 
 public class PrescriptionDetail : BaseEntity
 {
-    public string Dosage { get; set; } = string.Empty;
+    public string Quantity { get; set; } = string.Empty;
     
-    public string Frequency { get; set; } = string.Empty;
-
-    public int Duration { get; set; }
-
-    public string? Instructions { get; set; }
+    public string? UsageInstruction { get; set; }
 
     public int MedicineId { get; set; }
 
