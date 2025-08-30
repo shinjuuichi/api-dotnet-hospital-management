@@ -14,5 +14,8 @@ public class Medicine : AuditableEntity
     [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
     public string? Description { get; set; }
 
+    [Range(typeof(decimal), "0.00", "79228162514264337593543950335", ErrorMessage = "Unit price must be non-negative")]
+    public decimal Price { get; set; }
+
     public ICollection<PrescriptionDetail> PrescriptionDetails { get; set; } = new List<PrescriptionDetail>();
 }

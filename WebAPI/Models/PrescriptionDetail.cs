@@ -1,25 +1,28 @@
 using System.ComponentModel.DataAnnotations;
-using WebAPI.Models.EntityAbstractions;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebAPI.Models;
 
-public class PrescriptionDetail : BaseEntity
+public class PrescriptionDetail
 {
-    [Required(ErrorMessage = "Quantity is required")]
-    [StringLength(50, MinimumLength = 1, ErrorMessage = "Quantity must be between 1 and 50 characters")]
-    public string Quantity { get; set; } = string.Empty;
+    [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1")]
+    public int Quantity { get; set; }
+
+    [Range(typeof(decimal), "0.00", "79228162514264337593543950335", ErrorMessage = "Unit price must be non-negative")]
+    public decimal UnitPrice { get; set; }
 
     [StringLength(500, ErrorMessage = "Usage instruction cannot exceed 500 characters")]
     public string? UsageInstruction { get; set; }
 
-    [Required(ErrorMessage = "Medicine ID is required")]
     [Range(1, int.MaxValue, ErrorMessage = "Medicine ID must be a positive number")]
     public int MedicineId { get; set; }
 
-    [Required(ErrorMessage = "Prescription ID is required")]
     [Range(1, int.MaxValue, ErrorMessage = "Prescription ID must be a positive number")]
     public int PrescriptionId { get; set; }
 
     public Prescription Prescription { get; set; } = null!;
     public Medicine Medicine { get; set; } = null!;
+
+    [NotMapped]
+    public decimal TotalPrice => UnitPrice * Quantity;
 }
