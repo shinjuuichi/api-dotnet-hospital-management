@@ -34,7 +34,6 @@ app.UseCors();
 app.UseMiddleware<JWTAuthenticationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<ResponseWrappingMiddleware>();
 app.MapControllers();
 
 app.Run();
