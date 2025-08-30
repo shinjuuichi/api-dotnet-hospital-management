@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebAPI.Models.EntityAbstractions;
 
 namespace WebAPI.Models;
 
-public class PrescriptionDetail
+public class PrescriptionDetail : AuditableEntity
 {
     [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1")]
     public int Quantity { get; set; }

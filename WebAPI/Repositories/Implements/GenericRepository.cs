@@ -42,6 +42,26 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Entity
         return await query.ToListAsync();
     }
 
+    public async Task<List<T>> GetAllIncludeDeletedAsync(Expression<Func<T, bool>>? filter = null, string[]? includes = null)
+    {
+        IQueryable<T> query = _dbSet;
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        return await query.ToListAsync();
+    }
+
     public IQueryable<T> GetAllQueryable(string[]? includes = null)
     {
         IQueryable<T> query = _dbSet;
@@ -50,6 +70,21 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Entity
         {
             query = query.Where(e => !((AuditableEntity)(object)e).IsDeleted);
         }
+
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        return query;
+    }
+
+    public IQueryable<T> GetAllIncludeDeletedQueryable(string[]? includes = null)
+    {
+        IQueryable<T> query = _dbSet;
 
         if (includes != null)
         {
@@ -87,6 +122,26 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Entity
         return await query.FirstOrDefaultAsync();
     }
 
+    public async Task<T?> GetByIdIncludeDeletedAsync(int id, string[]? includes = null)
+    {
+        IQueryable<T> query = _dbSet;
+
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
+        {
+            query = query.Where(e => ((BaseEntity)(object)e).Id == id);
+        }
+
+        return await query.FirstOrDefaultAsync();
+    }
+
     public async Task<T?> GetByConditionAsync(Expression<Func<T, bool>> filter, string[]? includes = null)
     {
         IQueryable<T> query = _dbSet;
@@ -109,8 +164,30 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Entity
         return await query.FirstOrDefaultAsync();
     }
 
+    public async Task<T?> GetByConditionIncludeDeletedAsync(Expression<Func<T, bool>> filter, string[]? includes = null)
+    {
+        IQueryable<T> query = _dbSet;
+
+        query = query.Where(filter);
+
+        if (includes != null)
+        {
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+        }
+
+        return await query.FirstOrDefaultAsync();
+    }
+
     public async Task<T> AddAsync(T entity)
     {
+        if (typeof(AuditableEntity).IsAssignableFrom(typeof(T)))
+        {
+            ((AuditableEntity)(object)entity).CreationDate = DateTime.UtcNow;
+        }
+
         await _dbSet.AddAsync(entity);
         return entity;
     }
@@ -139,6 +216,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : Entity
         {
             _dbSet.Remove(entity);
         }
+    }
+
+    public void HardDelete(T entity)
+    {
+        _dbSet.Remove(entity);
     }
 
     public async Task<bool> AnyAsync(Expression<Func<T, bool>>? filter = null)
