@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using WebAPI.Models.EntityAbstractions;
 using WebAPI.Models.Enum;
 
@@ -37,10 +38,12 @@ public class User : AuditableEntity
 
     [Required(ErrorMessage = "Gender is required")]
     [EnumDataType(typeof(GenderEnum), ErrorMessage = "Invalid gender selected")]
+    [Column(TypeName = "nvarchar(10)")]
     public GenderEnum Gender { get; set; }
 
     [Required(ErrorMessage = "Role is required")]
     [EnumDataType(typeof(RoleEnum), ErrorMessage = "Invalid role selected")]
+    //[Column(TypeName = "nvarchar(10)")]
     public RoleEnum Role { get; set; }
 
     public Doctor? Doctor { get; set; }

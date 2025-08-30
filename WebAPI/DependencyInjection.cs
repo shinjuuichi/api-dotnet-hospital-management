@@ -29,6 +29,14 @@ namespace WebAPI
 
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
+            services.AddScoped<WebAPI.Services.Interfaces.IAuthService, WebAPI.Services.Implements.AuthService>();
+            services.AddScoped<WebAPI.Services.Interfaces.IUserService, WebAPI.Services.Implements.UserService>();
+            services.AddScoped<WebAPI.Services.Interfaces.ISpecialtyService, WebAPI.Services.Implements.SpecialtyService>();
+            services.AddScoped<WebAPI.Services.Interfaces.IDoctorService, WebAPI.Services.Implements.DoctorService>();
+            services.AddScoped<WebAPI.Services.Interfaces.IPatientService, WebAPI.Services.Implements.PatientService>();
+            services.AddScoped<WebAPI.Services.Interfaces.IAppointmentService, WebAPI.Services.Implements.AppointmentService>();
+            services.AddScoped<WebAPI.Services.Interfaces.IPrescriptionService, WebAPI.Services.Implements.PrescriptionService>();
+            services.AddScoped<WebAPI.Services.Interfaces.IMedicineService, WebAPI.Services.Implements.MedicineService>();
 
             return services;
         }
@@ -73,25 +81,25 @@ namespace WebAPI
 
         public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
         {
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(option =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                option.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Skibidi Hopita API",
-                    Version = "v1",
-                    Description = "Hospital Management System API with SOLID principles and clean architecture"
+                    Title = "Hospital Management",
+                    Version = "v1"
                 });
 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.\n\nExample: \"Bearer 12345abcdef\"",
-                    Name = "Authorization",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
+                    Description = "Add token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
                     Scheme = "Bearer"
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -102,10 +110,11 @@ namespace WebAPI
                                 Id = "Bearer"
                             }
                         },
-                        new string[] {}
+                        new string[] { }
                     }
                 });
             });
+
 
             return services;
         }
@@ -127,6 +136,8 @@ namespace WebAPI
 
         public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddControllers();
+
             services.AddDatabase(configuration)
                    .AddRepositories()
                    .AddBusinessServices()

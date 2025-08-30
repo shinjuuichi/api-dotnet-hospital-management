@@ -17,7 +17,9 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await context.Database.MigrateAsync();
 }
+
 app.UseMiddleware<GlobalExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -29,7 +31,16 @@ if (app.Environment.IsDevelopment())
         c.DefaultModelsExpandDepth(0);
     });
 }
+
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+    RequestPath = "/images"
+});
+
 app.UseCors();
 app.UseMiddleware<JWTAuthenticationMiddleware>();
 app.UseAuthentication();

@@ -9,11 +9,13 @@ public class JWTAuthenticationMiddleware
 
     private static readonly string[] AnonymousAllowedPrefixes =
     {
-        "/api/v1/auth/register",
-        "/api/v1/auth/confirm-otp",
-        "/api/v1/auth/login",
-        "/api/v1/auth/resend-otp",
-        "/api/v1/guest",
+        "/api/auth/register",
+        "/api/auth/confirm-otp",
+        "/api/auth/forgot-password",
+        "/api/auth/forgot-password/reset",
+        "/api/auth/login",
+        "/api/auth/resend-otp",
+        "/api/guest",
         "/swagger",
         "/api-docs"
     };
@@ -47,7 +49,7 @@ public class JWTAuthenticationMiddleware
             return;
         }
 
-        var principal = JwtHandler.ValidateToken(token);    
+        var principal = JwtHandler.ValidateToken(token);
         if (principal == null)
         {
             await ReturnUnauthorized(context, "Invalid or expired token");
@@ -70,10 +72,7 @@ public class JWTAuthenticationMiddleware
 
         var response = new
         {
-            code = 401,
-            data = (object?)null,
-            message = message,
-            status = "fail"
+            message
         };
 
         var json = JsonSerializer.Serialize(response, new JsonSerializerOptions

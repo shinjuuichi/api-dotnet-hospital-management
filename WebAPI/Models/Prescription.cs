@@ -16,4 +16,9 @@ public class Prescription : AuditableEntity
 
     public Appointment Appointment { get; set; } = null!;
     public ICollection<PrescriptionDetail> PrescriptionDetails { get; set; } = new List<PrescriptionDetail>();
+
+    public void UpdateTotalAmount(decimal amount)
+    {
+        TotalAmount = amount;
+    }
 }

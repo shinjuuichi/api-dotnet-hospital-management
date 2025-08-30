@@ -64,9 +64,12 @@ namespace WebAPI.Data.Seeds
                 {
                     Id = 1,
                     LicenseNo = "MD-001-2023",
+                    Bio = "Experienced cardiologist with 10+ years of practice",
+                    YearOfExperience = 10,
                     UserId = 2,
                     SpecialtyId = 1,
                     CreationDate = seededAt,
+                    IsDeleted = false
                 }
             );
 
@@ -78,6 +81,37 @@ namespace WebAPI.Data.Seeds
                     Address = "123 Main Street, Anytown, ST 12345",
                     UserId = 3,
                     CreationDate = seededAt,
+                    IsDeleted = false
+                }
+            );
+
+            modelBuilder.Entity<Medicine>().HasData(
+                new Medicine
+                {
+                    Id = 1,
+                    Name = "Paracetamol",
+                    Description = "Pain reliever and fever reducer",
+                    Price = 15.50m,
+                    CreationDate = seededAt,
+                    IsDeleted = false
+                },
+                new Medicine
+                {
+                    Id = 2,
+                    Name = "Ibuprofen",
+                    Description = "Nonsteroidal anti-inflammatory drug (NSAID)",
+                    Price = 12.75m,
+                    CreationDate = seededAt,
+                    IsDeleted = false
+                },
+                new Medicine
+                {
+                    Id = 3,
+                    Name = "Amoxicillin",
+                    Description = "Antibiotic used to treat bacterial infections",
+                    Price = 25.00m,
+                    CreationDate = seededAt,
+                    IsDeleted = false
                 }
             );
         }

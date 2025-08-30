@@ -18,9 +18,11 @@
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.0" />
+    <PackageReference Include="Stateless" Version="5.16.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Images\" />
     <Folder Include="Services\Implements\" />
     <Folder Include="Services\Interfaces\" />
   </ItemGroup>
