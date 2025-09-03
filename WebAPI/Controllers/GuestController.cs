@@ -19,46 +19,21 @@ public class GuestController : ControllerBase
     [HttpGet("specialties")]
     public async Task<IActionResult> GetSpecialties()
     {
-        try
-        {
-            var specialties = await _specialtyService.GetAllSpecialtiesAsync();
-            return Ok(specialties);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var specialties = await _specialtyService.GetAllSpecialtiesAsync();
+        return Ok(specialties);
     }
 
     [HttpGet("doctors")]
     public async Task<IActionResult> GetDoctors()
     {
-        try
-        {
-            var doctors = await _doctorService.GetAllDoctorsAsync(false); // Only active doctors
-            return Ok(doctors);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var doctors = await _doctorService.GetAllDoctorsAsync(false); // Only active doctors
+        return Ok(doctors);
     }
 
     [HttpGet("doctors/{doctorId}")]
     public async Task<IActionResult> GetDoctor(int doctorId)
     {
-        try
-        {
-            var doctor = await _doctorService.GetDoctorByIdAsync(doctorId);
-            return Ok(doctor);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var doctor = await _doctorService.GetDoctorByIdAsync(doctorId);
+        return Ok(doctor);
     }
 }

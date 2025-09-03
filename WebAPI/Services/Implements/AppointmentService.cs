@@ -37,7 +37,7 @@ public class AppointmentService : IAppointmentService
             else if (role == (int)RoleEnum.Doctor)
             {
                 var doctor = await _doctorRepository
-                    .GetByConditionAsync(d => d.UserId == userId.Value);
+                    .GetByIdAsync(userId.Value);
                 if (doctor != null)
                 {
                     query = query.Where(a => a.DoctorId == doctor.Id);

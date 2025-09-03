@@ -21,89 +21,38 @@ public class MedicineController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetMedicines()
     {
-        try
-        {
-            var medicines = await _medicineService.GetAllMedicinesAsync();
-            return Ok(medicines);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var medicines = await _medicineService.GetAllMedicinesAsync();
+        return Ok(medicines);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetMedicine(int id)
     {
-        try
-        {
-            var medicine = await _medicineService.GetMedicineByIdAsync(id);
-            return Ok(medicine);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var medicine = await _medicineService.GetMedicineByIdAsync(id);
+        return Ok(medicine);
     }
 
     [HttpPost]
     [Authorize(Roles = nameof(RoleEnum.Manager))]
     public async Task<IActionResult> CreateMedicine([FromBody] CreateMedicineRequestDto request)
     {
-        try
-        {
-            var medicine = await _medicineService.CreateMedicineAsync(request);
-            return CreatedAtAction(nameof(GetMedicine), new { id = medicine.Id }, medicine);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var medicine = await _medicineService.CreateMedicineAsync(request);
+        return CreatedAtAction(nameof(GetMedicine), new { id = medicine.Id }, medicine);
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = nameof(RoleEnum.Manager))]
     public async Task<IActionResult> UpdateMedicine(int id, [FromBody] UpdateMedicineRequestDto request)
     {
-        try
-        {
-            var medicine = await _medicineService.UpdateMedicineAsync(id, request);
-            return Ok(medicine);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var medicine = await _medicineService.UpdateMedicineAsync(id, request);
+        return Ok(medicine);
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = nameof(RoleEnum.Manager))]
     public async Task<IActionResult> DeleteMedicine(int id)
     {
-        try
-        {
-            await _medicineService.DeleteMedicineAsync(id);
-            return NoContent();
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        await _medicineService.DeleteMedicineAsync(id);
+        return NoContent();
     }
 }

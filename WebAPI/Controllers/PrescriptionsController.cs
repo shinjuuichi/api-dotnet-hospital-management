@@ -27,66 +27,33 @@ public class PrescriptionsController : ControllerBase
     [Authorize(Roles = nameof(RoleEnum.Doctor))]
     public async Task<IActionResult> CreatePrescription(int appointmentId, [FromBody] CreatePrescriptionRequestDto request)
     {
-        try
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            
-            // Get doctor by user ID
-            var doctor = await _unitOfWork.Repository<Doctor>()
-                .GetByConditionAsync(d => d.UserId == userId);
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        
+        // Get doctor by user ID
+        var doctor = await _unitOfWork.Repository<Doctor>()
+            .GetByConditionAsync(d => d.UserId == userId);
 
-            if (doctor == null)
-                return NotFound(new { message = "Doctor profile not found" });
+        if (doctor == null)
+            return NotFound(new { message = "Doctor profile not found" });
 
-            var prescription = await _prescriptionService.CreatePrescriptionAsync(appointmentId, request, doctor.Id);
-            return CreatedAtAction(nameof(GetPrescription), new { id = prescription.Id }, prescription);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Forbid(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var prescription = await _prescriptionService.CreatePrescriptionAsync(appointmentId, request, doctor.Id);
+        return CreatedAtAction(nameof(GetPrescription), new { id = prescription.Id }, prescription);
     }
 
     [HttpGet("prescriptions")]
     public async Task<IActionResult> GetPrescriptions()
     {
-        try
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-            var userRole = Enum.Parse<RoleEnum>(User.FindFirst(ClaimTypes.Role)?.Value ?? "Customer");
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var userRole = Enum.Parse<RoleEnum>(User.FindFirst(ClaimTypes.Role)?.Value ?? "Customer");
 
-            var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync(userId, (int)userRole);
-            return Ok(prescriptions);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var prescriptions = await _prescriptionService.GetAllPrescriptionsAsync(userId, (int)userRole);
+        return Ok(prescriptions);
     }
 
     [HttpGet("prescriptions/{id}")]
     public async Task<IActionResult> GetPrescription(int id)
     {
-        try
-        {
-            var prescription = await _prescriptionService.GetPrescriptionByIdAsync(id);
-            return Ok(prescription);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var prescription = await _prescriptionService.GetPrescriptionByIdAsync(id);
+        return Ok(prescription);
     }
 }

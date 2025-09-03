@@ -21,122 +21,49 @@ public class DoctorsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetDoctors([FromQuery] bool includeInactive = false)
     {
-        try
-        {
-            var doctors = await _doctorService.GetAllDoctorsAsync(includeInactive);
-            return Ok(doctors);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var doctors = await _doctorService.GetAllDoctorsAsync(includeInactive);
+        return Ok(doctors);
     }
 
     [HttpGet("{doctorId}")]
     public async Task<IActionResult> GetDoctor(int doctorId)
     {
-        try
-        {
-            var doctor = await _doctorService.GetDoctorByIdAsync(doctorId);
-            return Ok(doctor);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var doctor = await _doctorService.GetDoctorByIdAsync(doctorId);
+        return Ok(doctor);
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorRequestDto request)
     {
-        try
-        {
-            var doctor = await _doctorService.CreateDoctorAsync(request);
-            return CreatedAtAction(nameof(GetDoctor), new { doctorId = doctor.Id }, doctor);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var doctor = await _doctorService.CreateDoctorAsync(request);
+        return CreatedAtAction(nameof(GetDoctor), new { doctorId = doctor.Id }, doctor);
     }
 
     [HttpPut("{doctorId}")]
     public async Task<IActionResult> UpdateDoctor(int doctorId, [FromBody] UpdateDoctorRequestDto request)
     {
-        try
-        {
-            var doctor = await _doctorService.UpdateDoctorAsync(doctorId, request);
-            return Ok(doctor);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var doctor = await _doctorService.UpdateDoctorAsync(doctorId, request);
+        return Ok(doctor);
     }
 
     [HttpDelete("{doctorId}")]
     public async Task<IActionResult> DeleteDoctor(int doctorId)
     {
-        try
-        {
-            await _doctorService.DeleteDoctorAsync(doctorId);
-            return NoContent();
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        await _doctorService.DeleteDoctorAsync(doctorId);
+        return NoContent();
     }
 
     [HttpPatch("{doctorId}/activate")]
     public async Task<IActionResult> ActivateDoctor(int doctorId)
     {
-        try
-        {
-            var doctor = await _doctorService.ActivateDoctorAsync(doctorId);
-            return Ok(doctor);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var doctor = await _doctorService.ActivateDoctorAsync(doctorId);
+        return Ok(doctor);
     }
 
     [HttpPatch("{doctorId}/deactivate")]
     public async Task<IActionResult> DeactivateDoctor(int doctorId)
     {
-        try
-        {
-            var doctor = await _doctorService.DeactivateDoctorAsync(doctorId);
-            return Ok(doctor);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var doctor = await _doctorService.DeactivateDoctorAsync(doctorId);
+        return Ok(doctor);
     }
 }

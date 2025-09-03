@@ -22,89 +22,38 @@ public class SpecialtyController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetSpecialties()
     {
-        try
-        {
-            var specialties = await _specialtyService.GetAllSpecialtiesAsync();
-            return Ok(specialties);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var specialties = await _specialtyService.GetAllSpecialtiesAsync();
+        return Ok(specialties);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSpecialty(int id)
     {
-        try
-        {
-            var specialty = await _specialtyService.GetSpecialtyByIdAsync(id);
-            return Ok(specialty);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var specialty = await _specialtyService.GetSpecialtyByIdAsync(id);
+        return Ok(specialty);
     }
 
     [HttpPost]
     [Authorize(Roles = nameof(RoleEnum.Manager))]
     public async Task<IActionResult> CreateSpecialty([FromBody] CreateSpecialtyRequestDto request)
     {
-        try
-        {
-            var specialty = await _specialtyService.CreateSpecialtyAsync(request);
-            return CreatedAtAction(nameof(GetSpecialty), new { id = specialty.Id }, specialty);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var specialty = await _specialtyService.CreateSpecialtyAsync(request);
+        return CreatedAtAction(nameof(GetSpecialty), new { id = specialty.Id }, specialty);
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = nameof(RoleEnum.Manager))]
     public async Task<IActionResult> UpdateSpecialty(int id, [FromBody] UpdateSpecialtyRequestDto request)
     {
-        try
-        {
-            var specialty = await _specialtyService.UpdateSpecialtyAsync(id, request);
-            return Ok(specialty);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var specialty = await _specialtyService.UpdateSpecialtyAsync(id, request);
+        return Ok(specialty);
     }
 
     [HttpDelete("{id}")]
     [Authorize(Roles = nameof(RoleEnum.Manager))]
     public async Task<IActionResult> DeleteSpecialty(int id)
     {
-        try
-        {
-            await _specialtyService.DeleteSpecialtyAsync(id);
-            return NoContent();
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        await _specialtyService.DeleteSpecialtyAsync(id);
+        return NoContent();
     }
 }
