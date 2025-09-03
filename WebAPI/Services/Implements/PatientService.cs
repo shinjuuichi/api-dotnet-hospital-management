@@ -9,15 +9,17 @@ namespace WebAPI.Services.Implements;
 public class PatientService : IPatientService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGenericRepository<Patient> _patientRepository;
 
     public PatientService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
+        _patientRepository = _unitOfWork.Repository<Patient>();
     }
 
     public async Task<List<PatientListResponseDto>> GetAllPatientsAsync()
     {
-        var patients = await _unitOfWork.Repository<Patient>()
+        var patients = await _patientRepository
             .GetAllQueryable(new[] { "User" })
             .Select(p => new PatientListResponseDto
             {
@@ -36,7 +38,7 @@ public class PatientService : IPatientService
 
     public async Task<PatientResponseDto> GetPatientByIdAsync(int id)
     {
-        var patient = await _unitOfWork.Repository<Patient>()
+        var patient = await _patientRepository
             .GetAllQueryable(new[] { "User" })
             .Where(p => p.Id == id)
             .Select(p => new PatientResponseDto

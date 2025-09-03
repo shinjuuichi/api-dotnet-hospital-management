@@ -10,15 +10,25 @@ namespace WebAPI.Services.Implements;
 public class PrescriptionService : IPrescriptionService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGenericRepository<Prescription> _prescriptionRepository;
+    private readonly IGenericRepository<Doctor> _doctorRepository;
+    private readonly IGenericRepository<Appointment> _appointmentRepository;
+    private readonly IGenericRepository<Medicine> _medicineRepository;
+    private readonly IGenericRepository<PrescriptionDetail> _prescriptionDetailRepository;
 
     public PrescriptionService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
+        _prescriptionRepository = _unitOfWork.Repository<Prescription>();
+        _doctorRepository = _unitOfWork.Repository<Doctor>();
+        _appointmentRepository = _unitOfWork.Repository<Appointment>();
+        _medicineRepository = _unitOfWork.Repository<Medicine>();
+        _prescriptionDetailRepository = _unitOfWork.Repository<PrescriptionDetail>();
     }
 
     public async Task<List<PrescriptionListResponseDto>> GetAllPrescriptionsAsync(int? userId = null, int? role = null)
     {
-        var query = _unitOfWork.Repository<Prescription>()
+        var query = _prescriptionRepository
             .GetAllQueryable(new[] { "Appointment.Patient.User", "Appointment.Doctor.User", "PrescriptionDetails" });
 
         // Filter based on user role
@@ -32,7 +42,7 @@ public class PrescriptionService : IPrescriptionService
             else if (role == (int)RoleEnum.Doctor)
             {
                 // Doctor can only see prescriptions they created
-                var doctor = await _unitOfWork.Repository<Doctor>()
+                var doctor = await _doctorRepository
                     .GetByConditionAsync(d => d.UserId == userId.Value);
                 if (doctor != null)
                 {
@@ -77,7 +87,7 @@ public class PrescriptionService : IPrescriptionService
 
     public async Task<PrescriptionResponseDto> GetPrescriptionByIdAsync(int id)
     {
-        var prescription = await _unitOfWork.Repository<Prescription>()
+        var prescription = await _prescriptionRepository
             .GetAllQueryable(new[] { "Appointment.Patient.User", "Appointment.Doctor.User", "PrescriptionDetails.Medicine" })
             .Where(p => p.Id == id)
             .Select(p => new PrescriptionResponseDto
@@ -130,7 +140,7 @@ public class PrescriptionService : IPrescriptionService
     public async Task<PrescriptionResponseDto> CreatePrescriptionAsync(int appointmentId, CreatePrescriptionRequestDto request, int doctorId)
     {
         // Verify appointment exists and belongs to the doctor
-        var appointment = await _unitOfWork.Repository<Appointment>()
+        var appointment = await _appointmentRepository
             .GetByIdAsync(appointmentId, new[] { "Doctor", "Prescription" });
 
         if (appointment == null)
@@ -147,7 +157,7 @@ public class PrescriptionService : IPrescriptionService
 
         // Verify all medicines exist
         var medicineIds = request.Details.Select(d => d.MedicineId).ToList();
-        var medicines = await _unitOfWork.Repository<Medicine>()
+        var medicines = await _medicineRepository
             .GetAllAsync(m => medicineIds.Contains(m.Id));
 
         if (medicines.Count != medicineIds.Count)
@@ -160,7 +170,7 @@ public class PrescriptionService : IPrescriptionService
             Notes = request.Notes
         };
 
-        await _unitOfWork.Repository<Prescription>().AddAsync(prescription);
+        await _prescriptionRepository.AddAsync(prescription);
         await _unitOfWork.SaveChangeAsync();
 
         // Create prescription details
@@ -178,13 +188,13 @@ public class PrescriptionService : IPrescriptionService
             };
 
             totalAmount += detail.TotalPrice;
-            await _unitOfWork.Repository<PrescriptionDetail>().AddAsync(detail);
+            await _prescriptionDetailRepository.AddAsync(detail);
         }
 
         // Update total amount using the method
         prescription.UpdateTotalAmount(totalAmount);
 
-        _unitOfWork.Repository<Prescription>().Update(prescription);
+        _prescriptionRepository.Update(prescription);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetPrescriptionByIdAsync(prescription.Id);

@@ -10,15 +10,19 @@ namespace WebAPI.Services.Implements;
 public class UserService : IUserService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGenericRepository<User> _userRepository;
+    private readonly IGenericRepository<Patient> _patientRepository;
 
     public UserService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
+        _userRepository = _unitOfWork.Repository<User>();
+        _patientRepository = _unitOfWork.Repository<Patient>();
     }
 
     public async Task<ProfileResponseDto> GetProfileAsync(int userId)
     {
-        var user = await _unitOfWork.Repository<User>()
+        var user = await _userRepository
             .GetByIdAsync(userId, new[] { "Patient" });
 
         if (user == null)
@@ -48,7 +52,7 @@ public class UserService : IUserService
 
     public async Task<ProfileResponseDto> UpdateProfileAsync(int userId, UpdateProfileRequestDto request, IFormFile? avatarFile)
     {
-        var user = await _unitOfWork.Repository<User>()
+        var user = await _userRepository
             .GetByIdAsync(userId, new[] { "Patient" });
 
         if (user == null)
@@ -73,7 +77,7 @@ public class UserService : IUserService
             user.Avatar = await ImageUtil.SaveImageAsync(avatarFile);
         }
 
-        _unitOfWork.Repository<User>().Update(user);
+        _userRepository.Update(user);
 
         // Update patient information if user is a customer
         if (user.Role == RoleEnum.Customer)
@@ -87,14 +91,14 @@ public class UserService : IUserService
                     Address = request.Address ?? string.Empty,
                     InsuranceNo = request.InsuranceNo
                 };
-                await _unitOfWork.Repository<Patient>().AddAsync(patient);
+                await _patientRepository.AddAsync(patient);
             }
             else
             {
                 // Update existing patient record
                 user.Patient.Address = request.Address ?? user.Patient.Address;
                 user.Patient.InsuranceNo = request.InsuranceNo ?? user.Patient.InsuranceNo;
-                _unitOfWork.Repository<Patient>().Update(user.Patient);
+                _patientRepository.Update(user.Patient);
             }
         }
 

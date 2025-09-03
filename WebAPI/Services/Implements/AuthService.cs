@@ -13,16 +13,20 @@ public class AuthService : IAuthService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDistributedCache _cache;
+    private readonly IGenericRepository<User> _userRepository;
+    private readonly IGenericRepository<Patient> _patientRepository;
 
     public AuthService(IUnitOfWork unitOfWork, IDistributedCache cache)
     {
         _unitOfWork = unitOfWork;
         _cache = cache;
+        _userRepository = _unitOfWork.Repository<User>();
+        _patientRepository = _unitOfWork.Repository<Patient>();
     }
 
     public async Task<string> RegisterAsync(RegisterRequestDto request)
     {
-        var existingUser = await _unitOfWork.Repository<User>()
+        var existingUser = await _userRepository
             .GetByConditionAsync(u => u.Email == request.Email);
 
         if (existingUser != null)
@@ -82,7 +86,7 @@ public class AuthService : IAuthService
             IsVerified = true
         };
 
-        await _unitOfWork.Repository<User>().AddAsync(user);
+        await _userRepository.AddAsync(user);
         await _unitOfWork.SaveChangeAsync();
 
         var patient = new Patient
@@ -92,7 +96,7 @@ public class AuthService : IAuthService
             InsuranceNo = registrationData.GetProperty("InsuranceNo").GetString()
         };
 
-        await _unitOfWork.Repository<Patient>().AddAsync(patient);
+        await _patientRepository.AddAsync(patient);
         await _unitOfWork.SaveChangeAsync();
 
         await _cache.RemoveAsync(cacheKey);

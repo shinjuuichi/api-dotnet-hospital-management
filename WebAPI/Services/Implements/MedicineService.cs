@@ -9,15 +9,17 @@ namespace WebAPI.Services.Implements;
 public class MedicineService : IMedicineService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGenericRepository<Medicine> _medicineRepository;
 
     public MedicineService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
+        _medicineRepository = _unitOfWork.Repository<Medicine>();
     }
 
     public async Task<List<MedicineResponseDto>> GetAllMedicinesAsync()
     {
-        var medicines = await _unitOfWork.Repository<Medicine>()
+        var medicines = await _medicineRepository
             .GetAllQueryable()
             .Select(m => new MedicineResponseDto
             {
@@ -34,7 +36,7 @@ public class MedicineService : IMedicineService
 
     public async Task<MedicineResponseDto> GetMedicineByIdAsync(int id)
     {
-        var medicine = await _unitOfWork.Repository<Medicine>()
+        var medicine = await _medicineRepository
             .GetAllQueryable()
             .Where(m => m.Id == id)
             .Select(m => new MedicineResponseDto
@@ -56,7 +58,7 @@ public class MedicineService : IMedicineService
     public async Task<MedicineResponseDto> CreateMedicineAsync(CreateMedicineRequestDto request)
     {
         // Check if medicine with same name already exists
-        var existingMedicine = await _unitOfWork.Repository<Medicine>()
+        var existingMedicine = await _medicineRepository
             .GetByConditionAsync(m => m.Name.ToLower() == request.Name.ToLower());
 
         if (existingMedicine != null)
@@ -69,7 +71,7 @@ public class MedicineService : IMedicineService
             Price = request.Price
         };
 
-        await _unitOfWork.Repository<Medicine>().AddAsync(medicine);
+        await _medicineRepository.AddAsync(medicine);
         await _unitOfWork.SaveChangeAsync();
 
         return new MedicineResponseDto
@@ -84,13 +86,13 @@ public class MedicineService : IMedicineService
 
     public async Task<MedicineResponseDto> UpdateMedicineAsync(int id, UpdateMedicineRequestDto request)
     {
-        var medicine = await _unitOfWork.Repository<Medicine>().GetByIdAsync(id);
+        var medicine = await _medicineRepository.GetByIdAsync(id);
 
         if (medicine == null)
             throw new InvalidOperationException("Medicine not found");
 
         // Check if another medicine with same name exists
-        var existingMedicine = await _unitOfWork.Repository<Medicine>()
+        var existingMedicine = await _medicineRepository
             .GetByConditionAsync(m => m.Name.ToLower() == request.Name.ToLower() && m.Id != id);
 
         if (existingMedicine != null)
@@ -100,7 +102,7 @@ public class MedicineService : IMedicineService
         medicine.Description = request.Description;
         medicine.Price = request.Price;
 
-        _unitOfWork.Repository<Medicine>().Update(medicine);
+        _medicineRepository.Update(medicine);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetMedicineByIdAsync(id);
@@ -108,7 +110,7 @@ public class MedicineService : IMedicineService
 
     public async Task DeleteMedicineAsync(int id)
     {
-        var medicine = await _unitOfWork.Repository<Medicine>()
+        var medicine = await _medicineRepository
             .GetByIdAsync(id, new[] { "PrescriptionDetails" });
 
         if (medicine == null)
@@ -118,7 +120,7 @@ public class MedicineService : IMedicineService
         if (medicine.PrescriptionDetails.Any())
             throw new InvalidOperationException("Cannot delete medicine that has been prescribed");
 
-        _unitOfWork.Repository<Medicine>().Remove(medicine);
+        _medicineRepository.Remove(medicine);
         await _unitOfWork.SaveChangeAsync();
     }
 }

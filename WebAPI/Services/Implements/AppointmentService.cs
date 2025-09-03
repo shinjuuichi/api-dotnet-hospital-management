@@ -11,15 +11,21 @@ namespace WebAPI.Services.Implements;
 public class AppointmentService : IAppointmentService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGenericRepository<Appointment> _appointmentRepository;
+    private readonly IGenericRepository<Doctor> _doctorRepository;
+    private readonly IGenericRepository<Patient> _patientRepository;
 
     public AppointmentService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
+        _appointmentRepository = _unitOfWork.Repository<Appointment>();
+        _doctorRepository = _unitOfWork.Repository<Doctor>();
+        _patientRepository = _unitOfWork.Repository<Patient>();
     }
 
     public async Task<List<AppointmentListResponseDto>> GetAllAppointmentsAsync(int? userId = null, int? role = null)
     {
-        var query = _unitOfWork.Repository<Appointment>()
+        var query = _appointmentRepository
             .GetAllQueryable(new[] { "Patient.User", "Doctor.User", "Doctor.Specialty", "Prescription" });
 
         if (userId.HasValue && role.HasValue)
@@ -30,7 +36,7 @@ public class AppointmentService : IAppointmentService
             }
             else if (role == (int)RoleEnum.Doctor)
             {
-                var doctor = await _unitOfWork.Repository<Doctor>()
+                var doctor = await _doctorRepository
                     .GetByConditionAsync(d => d.UserId == userId.Value);
                 if (doctor != null)
                 {
@@ -78,7 +84,7 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentResponseDto> GetAppointmentByIdAsync(int id)
     {
-        var appointment = await _unitOfWork.Repository<Appointment>()
+        var appointment = await _appointmentRepository
             .GetAllQueryable(new[] { "Patient.User", "Doctor.User", "Doctor.Specialty", "Prescription" })
             .Where(a => a.Id == id)
             .Select(a => new AppointmentResponseDto
@@ -122,13 +128,13 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentResponseDto> CreateAppointmentAsync(int patientId, CreateAppointmentRequestDto request)
     {
-        var patient = await _unitOfWork.Repository<Patient>().GetByIdAsync(patientId);
+        var patient = await _patientRepository.GetByIdAsync(patientId);
         if (patient == null)
             throw new InvalidOperationException("Patient not found");
 
         if (request.DoctorId.HasValue)
         {
-            var doctor = await _unitOfWork.Repository<Doctor>().GetByIdAsync(request.DoctorId.Value);
+            var doctor = await _doctorRepository.GetByIdAsync(request.DoctorId.Value);
             if (doctor == null || doctor.IsDeleted)
                 throw new InvalidOperationException("Doctor not found or inactive");
         }
@@ -145,7 +151,7 @@ public class AppointmentService : IAppointmentService
             Status = AppointmentStatusEnum.Pending
         };
 
-        await _unitOfWork.Repository<Appointment>().AddAsync(appointment);
+        await _appointmentRepository.AddAsync(appointment);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetAppointmentByIdAsync(appointment.Id);
@@ -153,7 +159,7 @@ public class AppointmentService : IAppointmentService
 
     public async Task DeleteAppointmentAsync(int id, int userId, int userRole)
     {
-        var appointment = await _unitOfWork.Repository<Appointment>()
+        var appointment = await _appointmentRepository
             .GetByIdAsync(id, new[] { "Patient" });
 
         if (appointment == null)
@@ -168,19 +174,19 @@ public class AppointmentService : IAppointmentService
         if (appointment.Status != AppointmentStatusEnum.Pending)
             throw new InvalidOperationException("Can only delete pending appointments");
 
-        _unitOfWork.Repository<Appointment>().Remove(appointment);
+        _appointmentRepository.Remove(appointment);
         await _unitOfWork.SaveChangeAsync();
     }
 
     public async Task<AppointmentResponseDto> ConfirmAppointmentAsync(int id, int userId)
     {
-        var appointment = await _unitOfWork.Repository<Appointment>()
+        var appointment = await _appointmentRepository
             .GetByIdAsync(id, new[] { "Doctor" });
 
         if (appointment == null)
             throw new InvalidOperationException("Appointment not found");
 
-        var doctor = await _unitOfWork.Repository<Doctor>()
+        var doctor = await _doctorRepository
             .GetByConditionAsync(d => d.UserId == userId);
 
         if (doctor != null && appointment.DoctorId != doctor.Id)
@@ -191,7 +197,7 @@ public class AppointmentService : IAppointmentService
             throw new InvalidOperationException($"Cannot confirm appointment in {appointment.Status} status");
 
         appointment.Status = stateMachine.Fire(AppointmentTrigger.Confirm);
-        _unitOfWork.Repository<Appointment>().Update(appointment);
+        _appointmentRepository.Update(appointment);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetAppointmentByIdAsync(id);
@@ -199,7 +205,7 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentResponseDto> CancelAppointmentAsync(int id, int userId, int userRole)
     {
-        var appointment = await _unitOfWork.Repository<Appointment>()
+        var appointment = await _appointmentRepository
             .GetByIdAsync(id, new[] { "Patient", "Doctor" });
 
         if (appointment == null)
@@ -212,7 +218,7 @@ public class AppointmentService : IAppointmentService
         }
         else if (userRole == (int)RoleEnum.Doctor)
         {
-            var doctor = await _unitOfWork.Repository<Doctor>()
+            var doctor = await _doctorRepository
                 .GetByConditionAsync(d => d.UserId == userId);
             if (doctor == null || appointment.DoctorId != doctor.Id)
                 throw new UnauthorizedAccessException("You can only cancel appointments assigned to you");
@@ -223,7 +229,7 @@ public class AppointmentService : IAppointmentService
             throw new InvalidOperationException($"Cannot cancel appointment in {appointment.Status} status");
 
         appointment.Status = stateMachine.Fire(AppointmentTrigger.Cancel);
-        _unitOfWork.Repository<Appointment>().Update(appointment);
+        _appointmentRepository.Update(appointment);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetAppointmentByIdAsync(id);
@@ -231,13 +237,13 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentResponseDto> CompleteAppointmentAsync(int id, int userId)
     {
-        var appointment = await _unitOfWork.Repository<Appointment>()
+        var appointment = await _appointmentRepository
             .GetByIdAsync(id, new[] { "Doctor" });
 
         if (appointment == null)
             throw new InvalidOperationException("Appointment not found");
 
-        var doctor = await _unitOfWork.Repository<Doctor>()
+        var doctor = await _doctorRepository
             .GetByConditionAsync(d => d.UserId == userId);
 
         if (doctor == null || appointment.DoctorId != doctor.Id)
@@ -248,7 +254,7 @@ public class AppointmentService : IAppointmentService
             throw new InvalidOperationException($"Cannot complete appointment in {appointment.Status} status");
 
         appointment.Status = stateMachine.Fire(AppointmentTrigger.Complete);
-        _unitOfWork.Repository<Appointment>().Update(appointment);
+        _appointmentRepository.Update(appointment);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetAppointmentByIdAsync(id);
@@ -256,12 +262,12 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentResponseDto> AssignDoctorAsync(int id, AssignDoctorRequestDto request, int userId)
     {
-        var appointment = await _unitOfWork.Repository<Appointment>().GetByIdAsync(id);
+        var appointment = await _appointmentRepository.GetByIdAsync(id);
 
         if (appointment == null)
             throw new InvalidOperationException("Appointment not found");
 
-        var doctor = await _unitOfWork.Repository<Doctor>().GetByIdAsync(request.DoctorId);
+        var doctor = await _doctorRepository.GetByIdAsync(request.DoctorId);
         if (doctor == null || doctor.IsDeleted)
             throw new InvalidOperationException("Doctor not found or inactive");
 
@@ -269,7 +275,7 @@ public class AppointmentService : IAppointmentService
             throw new InvalidOperationException("Can only assign doctor to pending appointments");
 
         appointment.DoctorId = request.DoctorId;
-        _unitOfWork.Repository<Appointment>().Update(appointment);
+        _appointmentRepository.Update(appointment);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetAppointmentByIdAsync(id);

@@ -11,15 +11,23 @@ namespace WebAPI.Services.Implements;
 public class DoctorService : IDoctorService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IGenericRepository<Doctor> _doctorRepository;
+    private readonly IGenericRepository<User> _userRepository;
+    private readonly IGenericRepository<Specialty> _specialtyRepository;
+    private readonly IGenericRepository<Appointment> _appointmentRepository;
 
     public DoctorService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
+        _doctorRepository = _unitOfWork.Repository<Doctor>();
+        _userRepository = _unitOfWork.Repository<User>();
+        _specialtyRepository = _unitOfWork.Repository<Specialty>();
+        _appointmentRepository = _unitOfWork.Repository<Appointment>();
     }
 
     public async Task<List<DoctorListResponseDto>> GetAllDoctorsAsync(bool includeInactive = false)
     {
-        var query = _unitOfWork.Repository<Doctor>()
+        var query = _doctorRepository
             .GetAllQueryable(new[] { "User", "Specialty" });
 
         if (!includeInactive)
@@ -49,7 +57,7 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorResponseDto> GetDoctorByIdAsync(int id)
     {
-        var doctor = await _unitOfWork.Repository<Doctor>()
+        var doctor = await _doctorRepository
             .GetAllQueryable(new[] { "User", "Specialty" })
             .Where(d => d.Id == id)
             .Select(d => new DoctorResponseDto
@@ -82,19 +90,19 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorResponseDto> CreateDoctorAsync(CreateDoctorRequestDto request)
     {
-        var existingUser = await _unitOfWork.Repository<User>()
+        var existingUser = await _userRepository
             .GetByConditionAsync(u => u.Email == request.Email);
 
         if (existingUser != null)
             throw new InvalidOperationException("Email already registered");
 
-        var existingDoctor = await _unitOfWork.Repository<Doctor>()
+        var existingDoctor = await _doctorRepository
             .GetByConditionAsync(d => d.LicenseNo == request.LicenseNo);
 
         if (existingDoctor != null)
             throw new InvalidOperationException("License number already exists");
 
-        var specialty = await _unitOfWork.Repository<Specialty>().GetByIdAsync(request.SpecialtyId);
+        var specialty = await _specialtyRepository.GetByIdAsync(request.SpecialtyId);
         if (specialty == null)
             throw new InvalidOperationException("Specialty not found");
 
@@ -110,7 +118,7 @@ public class DoctorService : IDoctorService
             IsVerified = true
         };
 
-        await _unitOfWork.Repository<User>().AddAsync(user);
+        await _userRepository.AddAsync(user);
         await _unitOfWork.SaveChangeAsync();
 
         var doctor = new Doctor
@@ -122,7 +130,7 @@ public class DoctorService : IDoctorService
             SpecialtyId = request.SpecialtyId
         };
 
-        await _unitOfWork.Repository<Doctor>().AddAsync(doctor);
+        await _doctorRepository.AddAsync(doctor);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetDoctorByIdAsync(doctor.Id);
@@ -130,19 +138,19 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorResponseDto> UpdateDoctorAsync(int id, UpdateDoctorRequestDto request)
     {
-        var doctor = await _unitOfWork.Repository<Doctor>()
+        var doctor = await _doctorRepository
             .GetByIdAsync(id, new[] { "User" });
 
         if (doctor == null)
             throw new InvalidOperationException("Doctor not found");
 
-        var existingDoctor = await _unitOfWork.Repository<Doctor>()
+        var existingDoctor = await _doctorRepository
             .GetByConditionAsync(d => d.LicenseNo == request.LicenseNo && d.Id != id);
 
         if (existingDoctor != null)
             throw new InvalidOperationException("License number already exists");
 
-        var specialty = await _unitOfWork.Repository<Specialty>().GetByIdAsync(request.SpecialtyId);
+        var specialty = await _specialtyRepository.GetByIdAsync(request.SpecialtyId);
         if (specialty == null)
             throw new InvalidOperationException("Specialty not found");
 
@@ -156,8 +164,8 @@ public class DoctorService : IDoctorService
         doctor.YearOfExperience = request.YearOfExperience;
         doctor.SpecialtyId = request.SpecialtyId;
 
-        _unitOfWork.Repository<User>().Update(doctor.User);
-        _unitOfWork.Repository<Doctor>().Update(doctor);
+        _userRepository.Update(doctor.User);
+        _doctorRepository.Update(doctor);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetDoctorByIdAsync(id);
@@ -165,24 +173,24 @@ public class DoctorService : IDoctorService
 
     public async Task DeleteDoctorAsync(int id)
     {
-        var doctor = await _unitOfWork.Repository<Doctor>().GetByIdAsync(id);
+        var doctor = await _doctorRepository.GetByIdAsync(id);
 
         if (doctor == null)
             throw new InvalidOperationException("Doctor not found");
 
-        var hasActiveAppointments = await _unitOfWork.Repository<Appointment>()
+        var hasActiveAppointments = await _appointmentRepository
             .AnyAsync(a => a.DoctorId == id && a.Status != AppointmentStatusEnum.Cancelled && a.Status != AppointmentStatusEnum.Completed);
 
         if (hasActiveAppointments)
             throw new InvalidOperationException("Cannot delete doctor with active appointments");
 
-        _unitOfWork.Repository<Doctor>().Remove(doctor);
+        _doctorRepository.Remove(doctor);
         await _unitOfWork.SaveChangeAsync();
     }
 
     public async Task<DoctorResponseDto> ActivateDoctorAsync(int id)
     {
-        var doctor = await _unitOfWork.Repository<Doctor>().GetByIdAsync(id);
+        var doctor = await _doctorRepository.GetByIdAsync(id);
 
         if (doctor == null)
             throw new InvalidOperationException("Doctor not found");
@@ -191,7 +199,7 @@ public class DoctorService : IDoctorService
             throw new InvalidOperationException("Doctor is already active");
 
         doctor.IsDeleted = false;
-        _unitOfWork.Repository<Doctor>().Update(doctor);
+        _doctorRepository.Update(doctor);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetDoctorByIdAsync(id);
@@ -199,7 +207,7 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorResponseDto> DeactivateDoctorAsync(int id)
     {
-        var doctor = await _unitOfWork.Repository<Doctor>().GetByIdAsync(id);
+        var doctor = await _doctorRepository.GetByIdAsync(id);
 
         if (doctor == null)
             throw new InvalidOperationException("Doctor not found");
@@ -207,14 +215,14 @@ public class DoctorService : IDoctorService
         if (doctor.IsDeleted)
             throw new InvalidOperationException("Doctor is already inactive");
 
-        var hasActiveAppointments = await _unitOfWork.Repository<Appointment>()
+        var hasActiveAppointments = await _appointmentRepository
             .AnyAsync(a => a.DoctorId == id && a.Status == AppointmentStatusEnum.Pending);
 
         if (hasActiveAppointments)
             throw new InvalidOperationException("Cannot deactivate doctor with pending appointments");
 
         doctor.IsDeleted = true;
-        _unitOfWork.Repository<Doctor>().Update(doctor);
+        _doctorRepository.Update(doctor);
         await _unitOfWork.SaveChangeAsync();
 
         return await GetDoctorByIdAsync(id);
