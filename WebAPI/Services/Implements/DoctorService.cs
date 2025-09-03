@@ -25,14 +25,37 @@ public class DoctorService : IDoctorService
         _appointmentRepository = _unitOfWork.Repository<Appointment>();
     }
 
-    public async Task<List<DoctorListResponseDto>> GetAllDoctorsAsync(bool includeInactive = false)
+    public async Task<List<DoctorListResponseDto>> GetAllDoctorsAsync()
     {
+        string[] includes = { "User", "Specialty" };
         var query = _doctorRepository
-            .GetAllQueryable(new[] { "User", "Specialty" });
+            .GetAllQueryable(includes);
+        var doctors = await query
+            .Select(d => new DoctorListResponseDto
+            {
+                Id = d.Id,
+                FullName = d.User.FullName,
+                Email = d.User.Email,
+                Avatar = d.User.Avatar,
+                LicenseNo = d.LicenseNo,
+                Bio = d.Bio!,
+                YearOfExperience = d.YearOfExperience,
+                Specialty = new SpecialtyInfoDto
+                {
+                    Id = d.Specialty.Id,
+                    Name = d.Specialty.Name
+                },
+            })
+            .ToListAsync();
 
-        if (!includeInactive)
-            query = query.Where(d => !d.IsDeleted);
+        return doctors;
+    }
 
+    public async Task<List<DoctorListResponseDto>> GetAllDoctorsIncludeDeletedAsync()
+    {
+        string[] includes = { "User", "Specialty" };
+        var query = _doctorRepository
+            .GetAllIncludeDeletedQueryable(includes);
         var doctors = await query
             .Select(d => new DoctorListResponseDto
             {
@@ -57,8 +80,9 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorResponseDto> GetDoctorByIdAsync(int id)
     {
+        string[] includes = { "User", "Specialty" };
         var doctor = await _doctorRepository
-            .GetAllQueryable(new[] { "User", "Specialty" })
+            .GetAllQueryable(includes)
             .Where(d => d.Id == id)
             .Select(d => new DoctorResponseDto
             {
@@ -169,23 +193,6 @@ public class DoctorService : IDoctorService
         await _unitOfWork.SaveChangeAsync();
 
         return await GetDoctorByIdAsync(id);
-    }
-
-    public async Task DeleteDoctorAsync(int id)
-    {
-        var doctor = await _doctorRepository.GetByIdAsync(id);
-
-        if (doctor == null)
-            throw new InvalidOperationException("Doctor not found");
-
-        var hasActiveAppointments = await _appointmentRepository
-            .AnyAsync(a => a.DoctorId == id && a.Status != AppointmentStatusEnum.Cancelled && a.Status != AppointmentStatusEnum.Completed);
-
-        if (hasActiveAppointments)
-            throw new InvalidOperationException("Cannot delete doctor with active appointments");
-
-        _doctorRepository.Remove(doctor);
-        await _unitOfWork.SaveChangeAsync();
     }
 
     public async Task<DoctorResponseDto> ActivateDoctorAsync(int id)

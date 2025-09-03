@@ -6,18 +6,11 @@ using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-[Route("api/medicines")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class MedicineController : ControllerBase
+public class MedicineController(IMedicineService _medicineService) : ControllerBase
 {
-    private readonly IMedicineService _medicineService;
-
-    public MedicineController(IMedicineService medicineService)
-    {
-        _medicineService = medicineService;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetMedicines()
     {

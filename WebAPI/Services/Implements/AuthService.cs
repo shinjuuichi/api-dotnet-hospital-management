@@ -123,7 +123,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
     {
-        var user = await _unitOfWork.Repository<User>()
+        var user = await _userRepository
             .GetByConditionAsync(u => u.Email == request.Email);
 
         if (user == null || !CryptoPassword.IsPasswordCorrect(user.Password, request.Password))
@@ -131,6 +131,9 @@ public class AuthService : IAuthService
 
         if (!user.IsVerified)
             throw new UnauthorizedAccessException("Account not verified");
+
+        if (user.IsDeleted)
+            throw new UnauthorizedAccessException("Account has been deactivated");
 
         var token = user.GenerateToken();
 
@@ -163,7 +166,7 @@ public class AuthService : IAuthService
 
     public async Task<string> ForgotPasswordAsync(ForgotPasswordRequestDto request)
     {
-        var user = await _unitOfWork.Repository<User>()
+        var user = await _userRepository
             .GetByConditionAsync(u => u.Email == request.Email);
 
         if (user == null)
@@ -191,7 +194,7 @@ public class AuthService : IAuthService
         if (string.IsNullOrEmpty(cachedOtp) || cachedOtp != request.Otp)
             throw new InvalidOperationException("Invalid or expired OTP");
 
-        var user = await _unitOfWork.Repository<User>()
+        var user = await _userRepository
             .GetByConditionAsync(u => u.Email == request.Email);
 
         if (user == null)

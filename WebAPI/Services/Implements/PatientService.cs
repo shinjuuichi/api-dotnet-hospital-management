@@ -19,8 +19,9 @@ public class PatientService : IPatientService
 
     public async Task<List<PatientListResponseDto>> GetAllPatientsAsync()
     {
+        string[] includes = { "User" };
         var patients = await _patientRepository
-            .GetAllQueryable(new[] { "User" })
+            .GetAllQueryable(includes)
             .Select(p => new PatientListResponseDto
             {
                 Id = p.Id,
@@ -38,8 +39,9 @@ public class PatientService : IPatientService
 
     public async Task<PatientResponseDto> GetPatientByIdAsync(int id)
     {
+        string[] includes = { "User" };
         var patient = await _patientRepository
-            .GetAllQueryable(new[] { "User" })
+            .GetAllQueryable(includes)
             .Where(p => p.Id == id)
             .Select(p => new PatientResponseDto
             {

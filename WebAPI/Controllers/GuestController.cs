@@ -3,19 +3,10 @@ using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-[Route("api/guest")]
+[Route("api/[controller]")]
 [ApiController]
-public class GuestController : ControllerBase
+public class GuestController(ISpecialtyService _specialtyService, IDoctorService _doctorService) : ControllerBase
 {
-    private readonly ISpecialtyService _specialtyService;
-    private readonly IDoctorService _doctorService;
-
-    public GuestController(ISpecialtyService specialtyService, IDoctorService doctorService)
-    {
-        _specialtyService = specialtyService;
-        _doctorService = doctorService;
-    }
-
     [HttpGet("specialties")]
     public async Task<IActionResult> GetSpecialties()
     {
@@ -26,7 +17,7 @@ public class GuestController : ControllerBase
     [HttpGet("doctors")]
     public async Task<IActionResult> GetDoctors()
     {
-        var doctors = await _doctorService.GetAllDoctorsAsync(false); // Only active doctors
+        var doctors = await _doctorService.GetAllDoctorsAsync();
         return Ok(doctors);
     }
 

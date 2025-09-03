@@ -5,18 +5,11 @@ using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-[Route("api/patients")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = $"{nameof(RoleEnum.Manager)},{nameof(RoleEnum.Doctor)}")]
-public class PatientsController : ControllerBase
+public class PatientsController(IPatientService _patientService) : ControllerBase
 {
-    private readonly IPatientService _patientService;
-
-    public PatientsController(IPatientService patientService)
-    {
-        _patientService = patientService;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetPatients()
     {

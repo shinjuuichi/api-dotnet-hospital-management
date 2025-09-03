@@ -1,24 +1,16 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using WebAPI.DTOs.Specialty;
 using WebAPI.Models.Enum;
 using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-[Route("api/specialties")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class SpecialtyController : ControllerBase
+public class SpecialtyController(ISpecialtyService _specialtyService) : ControllerBase
 {
-    private readonly ISpecialtyService _specialtyService;
-
-    public SpecialtyController(ISpecialtyService specialtyService)
-    {
-        _specialtyService = specialtyService;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetSpecialties()
     {

@@ -6,18 +6,11 @@ using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-[Route("api/profile")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class ProfileController : ControllerBase
+public class ProfileController(IUserService _userService) : ControllerBase
 {
-    private readonly IUserService _userService;
-
-    public ProfileController(IUserService userService)
-    {
-        _userService = userService;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetProfile()
     {

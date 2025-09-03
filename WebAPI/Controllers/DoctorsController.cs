@@ -6,22 +6,15 @@ using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-[Route("api/doctors")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = nameof(RoleEnum.Manager))]
-public class DoctorsController : ControllerBase
+public class DoctorsController(IDoctorService _doctorService) : ControllerBase
 {
-    private readonly IDoctorService _doctorService;
-
-    public DoctorsController(IDoctorService doctorService)
-    {
-        _doctorService = doctorService;
-    }
-
     [HttpGet]
-    public async Task<IActionResult> GetDoctors([FromQuery] bool includeInactive = false)
+    public async Task<IActionResult> GetDoctors()
     {
-        var doctors = await _doctorService.GetAllDoctorsAsync(includeInactive);
+        var doctors = await _doctorService.GetAllDoctorsIncludeDeletedAsync();
         return Ok(doctors);
     }
 
@@ -44,13 +37,6 @@ public class DoctorsController : ControllerBase
     {
         var doctor = await _doctorService.UpdateDoctorAsync(doctorId, request);
         return Ok(doctor);
-    }
-
-    [HttpDelete("{doctorId}")]
-    public async Task<IActionResult> DeleteDoctor(int doctorId)
-    {
-        await _doctorService.DeleteDoctorAsync(doctorId);
-        return NoContent();
     }
 
     [HttpPatch("{doctorId}/activate")]

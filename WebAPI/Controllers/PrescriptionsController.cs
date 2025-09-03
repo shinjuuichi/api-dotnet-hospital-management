@@ -7,24 +7,17 @@ using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-[Route("api")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class PrescriptionsController : ControllerBase
+public class PrescriptionsController(IPrescriptionService _prescriptionService) : ControllerBase
 {
-    private readonly IPrescriptionService _prescriptionService;
-
-    public PrescriptionsController(IPrescriptionService prescriptionService)
-    {
-        _prescriptionService = prescriptionService;
-    }
-
     [HttpPost("appointments/{appointmentId}/prescriptions")]
     [Authorize(Roles = nameof(RoleEnum.Doctor))]
     public async Task<IActionResult> CreatePrescription(int appointmentId, [FromBody] CreatePrescriptionRequestDto request)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-        
+
         var prescription = await _prescriptionService.CreatePrescriptionAsync(appointmentId, request, userId);
         return CreatedAtAction(nameof(GetPrescription), new { id = prescription.Id }, prescription);
     }

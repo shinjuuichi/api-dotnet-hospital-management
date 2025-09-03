@@ -7,18 +7,11 @@ using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
-[Route("api/appointments")]
+[Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class AppointmentController : ControllerBase
+public class AppointmentController(IAppointmentService _appointmentService) : ControllerBase
 {
-    private readonly IAppointmentService _appointmentService;
-
-    public AppointmentController(IAppointmentService appointmentService)
-    {
-        _appointmentService = appointmentService;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAppointments()
     {
