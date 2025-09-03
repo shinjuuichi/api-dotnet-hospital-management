@@ -12,8 +12,8 @@ using WebAPI.Data;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250830050434_x")]
-    partial class x
+    [Migration("20250903162037_lmao")]
+    partial class lmao
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -418,8 +418,8 @@ namespace WebAPI.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<DateTime?>("DeletionDate")
                         .HasColumnType("datetime2");
@@ -475,13 +475,13 @@ namespace WebAPI.Migrations
                         {
                             Id = 1,
                             CreationDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            DateOfBirth = new DateTime(1980, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateOnly(1980, 5, 12),
                             Email = "manager@gmail.com",
                             FullName = "John Manager",
                             Gender = "Male",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$BmJj2boYn/VCQxKb264LWeBBi2o2nJfeAXMg.G/ySflRtdhKQyVj6",
+                            Password = "$2a$11$R.FMBufbKwCtGE5TWoSFIO4j7VO99YKRqbny9qYN9UlHNbZCuuwE2",
                             PhoneNumber = "0900000001",
                             Role = 0
                         },
@@ -489,13 +489,13 @@ namespace WebAPI.Migrations
                         {
                             Id = 2,
                             CreationDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            DateOfBirth = new DateTime(1985, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateOnly(1985, 6, 15),
                             Email = "sarah.wilson@hospital.com",
                             FullName = "Dr. Sarah Wilson",
                             Gender = "Female",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$Jr97QhwdIWIiX3RlIKFkAOL8Iu1eDkpdKvehow.JUaUr6Jsr17mxe",
+                            Password = "$2a$11$ce12R4ov2X8t.zStKo9qn.mZbDncfd9YiNIMcDCbEnddR3ZFV1OKa",
                             PhoneNumber = "0900000002",
                             Role = 1
                         },
@@ -503,13 +503,13 @@ namespace WebAPI.Migrations
                         {
                             Id = 3,
                             CreationDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            DateOfBirth = new DateTime(1995, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateOfBirth = new DateOnly(1995, 3, 20),
                             Email = "alice.johnson@email.com",
                             FullName = "Alice Johnson",
                             Gender = "Female",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$xT/sb4a7j1mjQB2RYf0BBu8evVPv8Om1IzSfeG6Df5MS8W/QKLLHq",
+                            Password = "$2a$11$Xmmvt4n6epcjndWdQ7ejNuyJDlb2aiIOmNoQpOHtKeLCL4Cbssu6K",
                             PhoneNumber = "0900000003",
                             Role = 2
                         });

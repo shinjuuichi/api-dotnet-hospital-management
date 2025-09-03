@@ -13,7 +13,7 @@ public class UpdateProfileRequestDto
     public string PhoneNumber { get; set; } = string.Empty;
 
     [Required]
-    public DateTime DateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
 
     [Required]
     public int Gender { get; set; }
@@ -28,7 +28,7 @@ public class ProfileResponseDto
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
-    public DateTime DateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
     public int Gender { get; set; }
     public int Role { get; set; }
     public string? Avatar { get; set; }

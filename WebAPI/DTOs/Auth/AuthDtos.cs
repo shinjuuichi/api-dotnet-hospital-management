@@ -21,7 +21,7 @@ public class RegisterRequestDto
     public string PhoneNumber { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Date of birth is required")]
-    public DateTime DateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
 
     [Required(ErrorMessage = "Gender is required")]
     public int Gender { get; set; }
@@ -88,7 +88,7 @@ public class UserDto
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
-    public DateTime DateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
     public int Gender { get; set; }
     public int Role { get; set; }
     public string? Avatar { get; set; }

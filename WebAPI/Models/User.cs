@@ -34,7 +34,7 @@ public class User : AuditableEntity
 
     [Required(ErrorMessage = "Date of Birth is required")]
     [DataType(DataType.Date)]
-    public DateTime DateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
 
     [Required(ErrorMessage = "Gender is required")]
     [EnumDataType(typeof(GenderEnum), ErrorMessage = "Invalid gender selected")]

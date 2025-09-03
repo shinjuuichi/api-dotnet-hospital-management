@@ -76,7 +76,7 @@ public class AuthService : IAuthService
             Email = registrationData.GetProperty("Email").GetString()!,
             Password = registrationData.GetProperty("Password").GetString()!,
             PhoneNumber = registrationData.GetProperty("PhoneNumber").GetString()!,
-            DateOfBirth = registrationData.GetProperty("DateOfBirth").GetDateTime(),
+            DateOfBirth = DateOnly.FromDateTime(registrationData.GetProperty("DateOfBirth").GetDateTime()),
             Gender = (GenderEnum)registrationData.GetProperty("Gender").GetInt32(),
             Role = RoleEnum.Customer,
             IsVerified = true
@@ -150,11 +150,10 @@ public class AuthService : IAuthService
 
     public async Task LogoutAsync(string token)
     {
-        // Add token to blacklist cache
         var cacheKey = $"blacklist:{token}";
         await _cache.SetStringAsync(cacheKey, "true", new DistributedCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) // Match token expiry
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
         });
     }
 
@@ -198,7 +197,6 @@ public class AuthService : IAuthService
         _unitOfWork.Repository<User>().Update(user);
         await _unitOfWork.SaveChangeAsync();
 
-        // Remove OTP from cache
         await _cache.RemoveAsync(cacheKey);
 
         return "Password reset successfully";
