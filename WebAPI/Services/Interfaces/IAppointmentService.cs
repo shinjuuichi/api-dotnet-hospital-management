@@ -11,5 +11,5 @@ public interface IAppointmentService
     Task<AppointmentResponseDto> ConfirmAppointmentAsync(int id, int userId);
     Task<AppointmentResponseDto> CancelAppointmentAsync(int id, int userId, int userRole);
     Task<AppointmentResponseDto> CompleteAppointmentAsync(int id, int userId);
-    Task<AppointmentResponseDto> AssignDoctorAsync(int id, AssignDoctorRequestDto request, int userId);
+    Task<AppointmentResponseDto> AssignDoctorAsync(AssignDoctorRequestDto request);
 }

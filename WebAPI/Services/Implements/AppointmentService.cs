@@ -131,7 +131,7 @@ public class AppointmentService : IAppointmentService
         // Get patient by user ID
         var patient = await _patientRepository
             .GetByConditionAsync(p => p.UserId == userId);
-        
+
         if (patient == null)
             throw new InvalidOperationException("Patient profile not found");
 
@@ -263,9 +263,9 @@ public class AppointmentService : IAppointmentService
         return await GetAppointmentByIdAsync(id);
     }
 
-    public async Task<AppointmentResponseDto> AssignDoctorAsync(int id, AssignDoctorRequestDto request, int userId)
+    public async Task<AppointmentResponseDto> AssignDoctorAsync(AssignDoctorRequestDto request)
     {
-        var appointment = await _appointmentRepository.GetByIdAsync(id);
+        var appointment = await _appointmentRepository.GetByIdAsync(request.AppointmentId);
 
         if (appointment == null)
             throw new InvalidOperationException("Appointment not found");
@@ -281,6 +281,6 @@ public class AppointmentService : IAppointmentService
         _appointmentRepository.Update(appointment);
         await _unitOfWork.SaveChangeAsync();
 
-        return await GetAppointmentByIdAsync(id);
+        return await GetAppointmentByIdAsync(request.AppointmentId);
     }
 }

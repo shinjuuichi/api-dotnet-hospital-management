@@ -79,10 +79,9 @@ public class AppointmentController(IAppointmentService _appointmentService) : Co
 
     [HttpPatch("{appointmentId}/assign-doctor")]
     [Authorize(Roles = nameof(RoleEnum.Manager))]
-    public async Task<IActionResult> AssignDoctor(int appointmentId, [FromBody] AssignDoctorRequestDto request)
+    public async Task<IActionResult> AssignDoctor([FromBody] AssignDoctorRequestDto request)
     {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-        var appointment = await _appointmentService.AssignDoctorAsync(appointmentId, request, userId);
+        var appointment = await _appointmentService.AssignDoctorAsync(request);
         return Ok(appointment);
     }
 }
