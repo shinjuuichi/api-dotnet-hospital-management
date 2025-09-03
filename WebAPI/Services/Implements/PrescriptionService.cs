@@ -137,8 +137,15 @@ public class PrescriptionService : IPrescriptionService
         return prescription;
     }
 
-    public async Task<PrescriptionResponseDto> CreatePrescriptionAsync(int appointmentId, CreatePrescriptionRequestDto request, int doctorId)
+    public async Task<PrescriptionResponseDto> CreatePrescriptionAsync(int appointmentId, CreatePrescriptionRequestDto request, int userId)
     {
+        // Get doctor by user ID
+        var doctor = await _doctorRepository
+            .GetByConditionAsync(d => d.UserId == userId);
+        
+        if (doctor == null)
+            throw new InvalidOperationException("Doctor profile not found");
+
         // Verify appointment exists and belongs to the doctor
         var appointment = await _appointmentRepository
             .GetByIdAsync(appointmentId, new[] { "Doctor", "Prescription" });
@@ -146,7 +153,7 @@ public class PrescriptionService : IPrescriptionService
         if (appointment == null)
             throw new InvalidOperationException("Appointment not found");
 
-        if (appointment.DoctorId != doctorId)
+        if (appointment.DoctorId != doctor.Id)
             throw new UnauthorizedAccessException("You can only prescribe for your own appointments");
 
         if (appointment.Status != AppointmentStatusEnum.Completed)

@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebAPI.DTOs.Prescription;
-using WebAPI.Models;
 using WebAPI.Models.Enum;
-using WebAPI.Repositories.Interfaces;
 using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
@@ -15,12 +13,10 @@ namespace WebAPI.Controllers;
 public class PrescriptionsController : ControllerBase
 {
     private readonly IPrescriptionService _prescriptionService;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public PrescriptionsController(IPrescriptionService prescriptionService, IUnitOfWork unitOfWork)
+    public PrescriptionsController(IPrescriptionService prescriptionService)
     {
         _prescriptionService = prescriptionService;
-        _unitOfWork = unitOfWork;
     }
 
     [HttpPost("appointments/{appointmentId}/prescriptions")]
@@ -29,14 +25,7 @@ public class PrescriptionsController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         
-        // Get doctor by user ID
-        var doctor = await _unitOfWork.Repository<Doctor>()
-            .GetByConditionAsync(d => d.UserId == userId);
-
-        if (doctor == null)
-            return NotFound(new { message = "Doctor profile not found" });
-
-        var prescription = await _prescriptionService.CreatePrescriptionAsync(appointmentId, request, doctor.Id);
+        var prescription = await _prescriptionService.CreatePrescriptionAsync(appointmentId, request, userId);
         return CreatedAtAction(nameof(GetPrescription), new { id = prescription.Id }, prescription);
     }
 

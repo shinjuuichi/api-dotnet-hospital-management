@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebAPI.DTOs.Appointment;
-using WebAPI.Models;
 using WebAPI.Models.Enum;
-using WebAPI.Repositories.Interfaces;
 using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
@@ -15,12 +13,10 @@ namespace WebAPI.Controllers;
 public class AppointmentController : ControllerBase
 {
     private readonly IAppointmentService _appointmentService;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public AppointmentController(IAppointmentService appointmentService, IUnitOfWork unitOfWork)
+    public AppointmentController(IAppointmentService appointmentService)
     {
         _appointmentService = appointmentService;
-        _unitOfWork = unitOfWork;
     }
 
     [HttpGet]
@@ -46,13 +42,7 @@ public class AppointmentController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-        var patient = await _unitOfWork.Repository<Patient>()
-            .GetByConditionAsync(p => p.UserId == userId);
-
-        if (patient == null)
-            return NotFound(new { message = "Patient profile not found" });
-
-        var appointment = await _appointmentService.CreateAppointmentAsync(patient.Id, request);
+        var appointment = await _appointmentService.CreateAppointmentAsync(userId, request);
         return CreatedAtAction(nameof(GetAppointment), new { appointmentId = appointment.Id }, appointment);
     }
 

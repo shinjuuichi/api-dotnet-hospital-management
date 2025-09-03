@@ -126,11 +126,14 @@ public class AppointmentService : IAppointmentService
         return appointment;
     }
 
-    public async Task<AppointmentResponseDto> CreateAppointmentAsync(int patientId, CreateAppointmentRequestDto request)
+    public async Task<AppointmentResponseDto> CreateAppointmentAsync(int userId, CreateAppointmentRequestDto request)
     {
-        var patient = await _patientRepository.GetByIdAsync(patientId);
+        // Get patient by user ID
+        var patient = await _patientRepository
+            .GetByConditionAsync(p => p.UserId == userId);
+        
         if (patient == null)
-            throw new InvalidOperationException("Patient not found");
+            throw new InvalidOperationException("Patient profile not found");
 
         if (request.DoctorId.HasValue)
         {
@@ -144,7 +147,7 @@ public class AppointmentService : IAppointmentService
 
         var appointment = new Appointment
         {
-            PatientId = patientId,
+            PatientId = patient.Id,
             DoctorId = request.DoctorId,
             AppointmentDate = request.AppointmentDate,
             Reason = request.Reason,
