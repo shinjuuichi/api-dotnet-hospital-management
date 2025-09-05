@@ -1,7 +1,7 @@
-using System.Net;
-using System.Text.Json;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Text.Json;
 using WebAPI.Utils;
 
 namespace WebAPI.Middleware;
@@ -114,13 +114,6 @@ public class GlobalExceptionMiddleware
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
 
-        try
-        {
-            await response.WriteAsync(jsonResponse);
-        }
-        catch (ObjectDisposedException)
-        { }
-        catch (InvalidOperationException)
-        { }
+        await response.WriteAsync(jsonResponse);
     }
 }
