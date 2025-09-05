@@ -438,9 +438,6 @@ namespace WebAPI.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("ModificationDate")
                         .HasColumnType("datetime2");
 
@@ -477,8 +474,7 @@ namespace WebAPI.Migrations
                             FullName = "John Manager",
                             Gender = "Male",
                             IsDeleted = false,
-                            IsVerified = true,
-                            Password = "$2a$11$R.FMBufbKwCtGE5TWoSFIO4j7VO99YKRqbny9qYN9UlHNbZCuuwE2",
+                            Password = "$2a$11$s0sd0GQcYuyxS.2zOjpwIuJT9DVIU/QYffQ/MG.Lhhg62/TJJ7Axq",
                             PhoneNumber = "0900000001",
                             Role = 0
                         },
@@ -491,8 +487,7 @@ namespace WebAPI.Migrations
                             FullName = "Dr. Sarah Wilson",
                             Gender = "Female",
                             IsDeleted = false,
-                            IsVerified = true,
-                            Password = "$2a$11$ce12R4ov2X8t.zStKo9qn.mZbDncfd9YiNIMcDCbEnddR3ZFV1OKa",
+                            Password = "$2a$11$rGdOXGVts98UpuUkP.ex8uYnScksEWnstWdix40LmdOpuMwTy2h/m",
                             PhoneNumber = "0900000002",
                             Role = 1
                         },
@@ -505,8 +500,7 @@ namespace WebAPI.Migrations
                             FullName = "Alice Johnson",
                             Gender = "Female",
                             IsDeleted = false,
-                            IsVerified = true,
-                            Password = "$2a$11$Xmmvt4n6epcjndWdQ7ejNuyJDlb2aiIOmNoQpOHtKeLCL4Cbssu6K",
+                            Password = "$2a$11$os3QtB38aGr5z/RsC0IFxu0SYWeyK4ISCfzjtmS7uZhLDSbALUXnS",
                             PhoneNumber = "0900000003",
                             Role = 2
                         });

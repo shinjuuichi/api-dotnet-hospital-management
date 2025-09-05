@@ -1,0 +1,44 @@
+services:
+  webapi:
+    image: ${DOCKER_REGISTRY-}webapi
+    build:
+      context: .
+      dockerfile: WebAPI/Dockerfile
+    depends_on:
+      - sqlserver
+      - redis
+    networks:
+      - hospital-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Shinjuuichi@11
+      - MSSQL_PID=Express
+    ports:
+      - '1433:1433'
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - hospital-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: redis-server --requirepass Shinjuuichi@11
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - hospital-network
+
+volumes:
+  sqlserver_data:
+  redis_data:
+
+networks:
+  hospital-network:
+    driver: bridge

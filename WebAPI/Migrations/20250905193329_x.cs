@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class lmao : Migration
+    public partial class x : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,7 +59,6 @@ namespace WebAPI.Migrations
                     FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    IsVerified = table.Column<bool>(type: "bit", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(10)", nullable: false),
@@ -250,12 +249,12 @@ namespace WebAPI.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Avatar", "CreationDate", "DateOfBirth", "DeletionDate", "Email", "FullName", "Gender", "IsDeleted", "IsVerified", "ModificationDate", "Password", "PhoneNumber", "Role" },
+                columns: new[] { "Id", "Avatar", "CreationDate", "DateOfBirth", "DeletionDate", "Email", "FullName", "Gender", "IsDeleted", "ModificationDate", "Password", "PhoneNumber", "Role" },
                 values: new object[,]
                 {
-                    { 1, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1980, 5, 12), null, "manager@gmail.com", "John Manager", "Male", false, true, null, "$2a$11$R.FMBufbKwCtGE5TWoSFIO4j7VO99YKRqbny9qYN9UlHNbZCuuwE2", "0900000001", 0 },
-                    { 2, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1985, 6, 15), null, "sarah.wilson@hospital.com", "Dr. Sarah Wilson", "Female", false, true, null, "$2a$11$ce12R4ov2X8t.zStKo9qn.mZbDncfd9YiNIMcDCbEnddR3ZFV1OKa", "0900000002", 1 },
-                    { 3, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1995, 3, 20), null, "alice.johnson@email.com", "Alice Johnson", "Female", false, true, null, "$2a$11$Xmmvt4n6epcjndWdQ7ejNuyJDlb2aiIOmNoQpOHtKeLCL4Cbssu6K", "0900000003", 2 }
+                    { 1, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1980, 5, 12), null, "manager@gmail.com", "John Manager", "Male", false, null, "$2a$11$s0sd0GQcYuyxS.2zOjpwIuJT9DVIU/QYffQ/MG.Lhhg62/TJJ7Axq", "0900000001", 0 },
+                    { 2, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1985, 6, 15), null, "sarah.wilson@hospital.com", "Dr. Sarah Wilson", "Female", false, null, "$2a$11$rGdOXGVts98UpuUkP.ex8uYnScksEWnstWdix40LmdOpuMwTy2h/m", "0900000002", 1 },
+                    { 3, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1995, 3, 20), null, "alice.johnson@email.com", "Alice Johnson", "Female", false, null, "$2a$11$os3QtB38aGr5z/RsC0IFxu0SYWeyK4ISCfzjtmS7uZhLDSbALUXnS", "0900000003", 2 }
                 });
 
             migrationBuilder.InsertData(
