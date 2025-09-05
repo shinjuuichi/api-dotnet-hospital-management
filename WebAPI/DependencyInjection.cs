@@ -6,6 +6,8 @@ using System.Text;
 using WebAPI.Data;
 using WebAPI.Repositories.Implements;
 using WebAPI.Repositories.Interfaces;
+using WebAPI.Services.Implements;
+using WebAPI.Services.Interfaces;
 
 namespace WebAPI
 {
@@ -29,14 +31,14 @@ namespace WebAPI
 
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            services.AddScoped<WebAPI.Services.Interfaces.IAuthService, WebAPI.Services.Implements.AuthService>();
-            services.AddScoped<WebAPI.Services.Interfaces.IUserService, WebAPI.Services.Implements.UserService>();
-            services.AddScoped<WebAPI.Services.Interfaces.ISpecialtyService, WebAPI.Services.Implements.SpecialtyService>();
-            services.AddScoped<WebAPI.Services.Interfaces.IDoctorService, WebAPI.Services.Implements.DoctorService>();
-            services.AddScoped<WebAPI.Services.Interfaces.IPatientService, WebAPI.Services.Implements.PatientService>();
-            services.AddScoped<WebAPI.Services.Interfaces.IAppointmentService, WebAPI.Services.Implements.AppointmentService>();
-            services.AddScoped<WebAPI.Services.Interfaces.IPrescriptionService, WebAPI.Services.Implements.PrescriptionService>();
-            services.AddScoped<WebAPI.Services.Interfaces.IMedicineService, WebAPI.Services.Implements.MedicineService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISpecialtyService, SpecialtyService>();
+            services.AddScoped<IDoctorService, DoctorService>();
+            services.AddScoped<IPatientService, PatientService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<IPrescriptionService, PrescriptionService>();
+            services.AddScoped<IMedicineService, MedicineService>();
 
             return services;
         }
