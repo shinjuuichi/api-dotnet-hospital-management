@@ -43,6 +43,10 @@ public class AppointmentService : IAppointmentService
                 {
                     query = query.Where(a => a.DoctorId == doctor.Id);
                 }
+                else
+                {
+                    throw new UnauthorizedAccessException("Doctor profile not found");
+                }
             }
         }
 
@@ -83,11 +87,34 @@ public class AppointmentService : IAppointmentService
         return appointments;
     }
 
-    public async Task<AppointmentResponseDto> GetAppointmentByIdAsync(int id)
+    public async Task<AppointmentResponseDto> GetAppointmentByIdAsync(int id, int? userId = null, int? role = null)
     {
         string[] includes = { "Patient.User", "Doctor.User", "Doctor.Specialty", "Prescription" };
-        var appointment = await _appointmentRepository.GetAllQueryable(includes)
-            .Where(a => a.Id == id)
+        var query = _appointmentRepository.GetAllQueryable(includes)
+            .Where(a => a.Id == id);
+
+        if (userId.HasValue && role.HasValue)
+        {
+            if (role == (int)RoleEnum.Customer)
+            {
+                query = query.Where(a => a.Patient.UserId == userId.Value);
+            }
+            else if (role == (int)RoleEnum.Doctor)
+            {
+                var doctor = await _doctorRepository
+                    .GetByConditionAsync(d => d.UserId == userId.Value);
+                if (doctor != null)
+                {
+                    query = query.Where(a => a.DoctorId == doctor.Id);
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException("Doctor profile not found");
+                }
+            }
+        }
+
+        var appointment = await query
             .Select(a => new AppointmentResponseDto
             {
                 Id = a.Id,

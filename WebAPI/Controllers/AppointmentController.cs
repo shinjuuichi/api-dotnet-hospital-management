@@ -14,6 +14,7 @@ namespace WebAPI.Controllers;
 public class AppointmentController(IAppointmentService _appointmentService) : BaseController
 {
     [HttpGet]
+    [Authorize(Roles = $"{nameof(RoleEnum.Customer)},{nameof(RoleEnum.Doctor)},{nameof(RoleEnum.Manager)}")]
     public async Task<IActionResult> GetAppointments()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
@@ -24,9 +25,13 @@ public class AppointmentController(IAppointmentService _appointmentService) : Ba
     }
 
     [HttpGet("{appointmentId}")]
+    [Authorize(Roles = $"{nameof(RoleEnum.Customer)},{nameof(RoleEnum.Doctor)},{nameof(RoleEnum.Manager)}")]
     public async Task<IActionResult> GetAppointment(int appointmentId)
     {
-        var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var userRole = Enum.Parse<RoleEnum>(User.FindFirst(ClaimTypes.Role)?.Value ?? "Customer");
+
+        var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId, userId, (int)userRole);
         return Ok(appointment);
     }
 
