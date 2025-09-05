@@ -19,8 +19,9 @@ public class SpecialtyService : ISpecialtyService
 
     public async Task<List<SpecialtyResponseDto>> GetAllSpecialtiesAsync()
     {
+        string[] includes = { "Doctors" };
         var specialties = await _specialtyRepository
-            .GetAllQueryable(new[] { "Doctors" })
+            .GetAllQueryable(includes)
             .Select(s => new SpecialtyResponseDto
             {
                 Id = s.Id,
@@ -35,8 +36,9 @@ public class SpecialtyService : ISpecialtyService
 
     public async Task<SpecialtyResponseDto> GetSpecialtyByIdAsync(int id)
     {
+        string[] includes = { "Doctors" };
         var specialty = await _specialtyRepository
-            .GetAllQueryable(new[] { "Doctors" })
+            .GetAllQueryable(includes)
             .Where(s => s.Id == id)
             .Select(s => new SpecialtyResponseDto
             {
@@ -55,13 +57,6 @@ public class SpecialtyService : ISpecialtyService
 
     public async Task<SpecialtyResponseDto> CreateSpecialtyAsync(CreateSpecialtyRequestDto request)
     {
-        // Check if specialty already exists
-        var existingSpecialty = await _specialtyRepository
-            .GetByConditionAsync(s => s.Name.ToLower() == request.Name.ToLower());
-
-        if (existingSpecialty != null)
-            throw new InvalidOperationException("Specialty with this name already exists");
-
         var specialty = new Specialty
         {
             Name = request.Name
@@ -81,18 +76,7 @@ public class SpecialtyService : ISpecialtyService
 
     public async Task<SpecialtyResponseDto> UpdateSpecialtyAsync(int id, UpdateSpecialtyRequestDto request)
     {
-        var specialty = await _specialtyRepository.GetByIdAsync(id);
-
-        if (specialty == null)
-            throw new InvalidOperationException("Specialty not found");
-
-        // Check if another specialty with same name exists
-        var existingSpecialty = await _specialtyRepository
-            .GetByConditionAsync(s => s.Name.ToLower() == request.Name.ToLower() && s.Id != id);
-
-        if (existingSpecialty != null)
-            throw new InvalidOperationException("Specialty with this name already exists");
-
+        var specialty = await _specialtyRepository.GetByIdAsync(id) ?? throw new InvalidOperationException("Specialty not found");
         specialty.Name = request.Name;
         _specialtyRepository.Update(specialty);
         await _unitOfWork.SaveChangeAsync();
@@ -102,17 +86,17 @@ public class SpecialtyService : ISpecialtyService
 
     public async Task DeleteSpecialtyAsync(int id)
     {
+        string[] includes = { "Doctors" };
         var specialty = await _specialtyRepository
-            .GetByIdAsync(id, new[] { "Doctors" });
+            .GetByIdAsync(id, includes);
 
         if (specialty == null)
             throw new InvalidOperationException("Specialty not found");
 
-        // Check if specialty has active doctors
         if (specialty.Doctors.Any(d => !d.IsDeleted))
             throw new InvalidOperationException("Cannot delete specialty with active doctors");
 
-        _specialtyRepository.Remove(specialty);
+        _specialtyRepository.HardDelete(specialty);
         await _unitOfWork.SaveChangeAsync();
     }
 }
