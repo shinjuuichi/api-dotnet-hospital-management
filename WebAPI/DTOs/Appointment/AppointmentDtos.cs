@@ -19,10 +19,6 @@ public class AssignDoctorRequestDto
     [Required]
     [Range(1, int.MaxValue)]
     public int DoctorId { get; set; }
-
-    [Required]
-    [Range(1, int.MaxValue)]
-    public int AppointmentId { get; set; }
 }
 
 public class AppointmentResponseDto

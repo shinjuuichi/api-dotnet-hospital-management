@@ -57,13 +57,6 @@ public class MedicineService : IMedicineService
 
     public async Task<MedicineResponseDto> CreateMedicineAsync(CreateMedicineRequestDto request)
     {
-        // Check if medicine with same name already exists
-        var existingMedicine = await _medicineRepository
-            .GetByConditionAsync(m => m.Name.ToLower() == request.Name.ToLower());
-
-        if (existingMedicine != null)
-            throw new InvalidOperationException("Medicine with this name already exists");
-
         var medicine = new Medicine
         {
             Name = request.Name,
@@ -91,13 +84,6 @@ public class MedicineService : IMedicineService
         if (medicine == null)
             throw new InvalidOperationException("Medicine not found");
 
-        // Check if another medicine with same name exists
-        var existingMedicine = await _medicineRepository
-            .GetByConditionAsync(m => m.Name.ToLower() == request.Name.ToLower() && m.Id != id);
-
-        if (existingMedicine != null)
-            throw new InvalidOperationException("Medicine with this name already exists");
-
         medicine.Name = request.Name;
         medicine.Description = request.Description;
         medicine.Price = request.Price;
@@ -110,15 +96,11 @@ public class MedicineService : IMedicineService
 
     public async Task DeleteMedicineAsync(int id)
     {
-        var medicine = await _medicineRepository
-            .GetByIdAsync(id, new[] { "PrescriptionDetails" });
+        string[] includes = { "PrescriptionDetails" };
+        var medicine = await _medicineRepository.GetByIdAsync(id, includes);
 
         if (medicine == null)
             throw new InvalidOperationException("Medicine not found");
-
-        // Check if medicine is used in any prescriptions
-        if (medicine.PrescriptionDetails.Any())
-            throw new InvalidOperationException("Cannot delete medicine that has been prescribed");
 
         _medicineRepository.Remove(medicine);
         await _unitOfWork.SaveChangeAsync();

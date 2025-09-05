@@ -20,10 +20,10 @@ public class ProfileController(IUserService _userService) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileRequestDto request, IFormFile? avatar)
+    public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileRequestDto request)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-        var profile = await _userService.UpdateProfileAsync(userId, request, avatar);
+        var profile = await _userService.UpdateProfileAsync(userId, request);
         return Ok(profile);
     }
 }

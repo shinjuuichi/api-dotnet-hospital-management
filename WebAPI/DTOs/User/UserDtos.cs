@@ -18,6 +18,7 @@ public class UpdateProfileRequestDto
     [Required]
     public int Gender { get; set; }
 
+    public IFormFile? AvatarFile { get; set; }
     public string? Address { get; set; }
     public string? InsuranceNo { get; set; }
 }

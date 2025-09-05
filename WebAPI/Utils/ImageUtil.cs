@@ -42,14 +42,7 @@ public static class ImageUtil
         var filePath = Path.Combine(ImageFolder, fileName);
         if (File.Exists(filePath))
         {
-            try
-            {
-                File.Delete(filePath);
-            }
-            catch
-            {
-                // Log error but don't throw exception for image deletion failure
-            }
+            File.Delete(filePath);
         }
     }
 

@@ -39,16 +39,6 @@ public class AppointmentController(IAppointmentService _appointmentService) : Co
         return CreatedAtAction(nameof(GetAppointment), new { appointmentId = appointment.Id }, appointment);
     }
 
-    [HttpDelete("{appointmentId}")]
-    public async Task<IActionResult> DeleteAppointment(int appointmentId)
-    {
-        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-        var userRole = Enum.Parse<RoleEnum>(User.FindFirst(ClaimTypes.Role)?.Value ?? "Customer");
-
-        await _appointmentService.DeleteAppointmentAsync(appointmentId, userId, (int)userRole);
-        return NoContent();
-    }
-
     [HttpPatch("{appointmentId}/confirm")]
     [Authorize(Roles = $"{nameof(RoleEnum.Doctor)},{nameof(RoleEnum.Manager)}")]
     public async Task<IActionResult> ConfirmAppointment(int appointmentId)
@@ -79,9 +69,9 @@ public class AppointmentController(IAppointmentService _appointmentService) : Co
 
     [HttpPatch("{appointmentId}/assign-doctor")]
     [Authorize(Roles = nameof(RoleEnum.Manager))]
-    public async Task<IActionResult> AssignDoctor([FromBody] AssignDoctorRequestDto request)
+    public async Task<IActionResult> AssignDoctor(int appointmentId, [FromBody] AssignDoctorRequestDto request)
     {
-        var appointment = await _appointmentService.AssignDoctorAsync(request);
+        var appointment = await _appointmentService.AssignDoctorAsync(appointmentId, request);
         return Ok(appointment);
     }
 }

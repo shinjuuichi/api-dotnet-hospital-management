@@ -22,12 +22,9 @@ public class UserService : IUserService
 
     public async Task<ProfileResponseDto> GetProfileAsync(int userId)
     {
-        var user = await _userRepository
-            .GetByIdAsync(userId, new[] { "Patient" });
-
-        if (user == null)
-            throw new InvalidOperationException("User not found");
-
+        string[] includes = { "Patient" };
+        var user = await _userRepository.GetByIdAsync(userId, includes)
+            ?? throw new InvalidOperationException("User not found");
         var response = new ProfileResponseDto
         {
             Id = user.Id,
@@ -40,7 +37,6 @@ public class UserService : IUserService
             Avatar = user.Avatar
         };
 
-        // Include patient-specific data if user is a customer
         if (user.Role == RoleEnum.Customer && user.Patient != null)
         {
             response.Address = user.Patient.Address;
@@ -50,41 +46,31 @@ public class UserService : IUserService
         return response;
     }
 
-    public async Task<ProfileResponseDto> UpdateProfileAsync(int userId, UpdateProfileRequestDto request, IFormFile? avatarFile)
+    public async Task<ProfileResponseDto> UpdateProfileAsync(int userId, UpdateProfileRequestDto request)
     {
-        var user = await _userRepository
-            .GetByIdAsync(userId, new[] { "Patient" });
-
-        if (user == null)
-            throw new InvalidOperationException("User not found");
-
-        // Update user information
+        string[] includes = { "Patient" };
+        var user = await _userRepository.GetByIdAsync(userId, includes)
+            ?? throw new InvalidOperationException("User not found");
         user.FullName = request.FullName;
         user.PhoneNumber = request.PhoneNumber;
         user.DateOfBirth = request.DateOfBirth;
         user.Gender = (GenderEnum)request.Gender;
-
-        // Handle avatar upload
-        if (avatarFile != null)
+        if (request.AvatarFile != null)
         {
-            // Remove old avatar if exists
             if (!string.IsNullOrEmpty(user.Avatar))
             {
                 ImageUtil.RemoveImage(user.Avatar);
             }
 
-            // Save new avatar
-            user.Avatar = await ImageUtil.SaveImageAsync(avatarFile);
+            user.Avatar = await ImageUtil.SaveImageAsync(request.AvatarFile);
         }
 
         _userRepository.Update(user);
 
-        // Update patient information if user is a customer
         if (user.Role == RoleEnum.Customer)
         {
             if (user.Patient == null)
             {
-                // Create patient record if it doesn't exist
                 var patient = new Patient
                 {
                     UserId = user.Id,
@@ -95,7 +81,6 @@ public class UserService : IUserService
             }
             else
             {
-                // Update existing patient record
                 user.Patient.Address = request.Address ?? user.Patient.Address;
                 user.Patient.InsuranceNo = request.InsuranceNo ?? user.Patient.InsuranceNo;
                 _patientRepository.Update(user.Patient);

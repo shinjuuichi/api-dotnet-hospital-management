@@ -36,6 +36,15 @@ public class AppointmentStateMachine
         return _machine.State;
     }
 
+    public AppointmentStatusEnum ChangeState(AppointmentTrigger trigger)
+    {
+        if (!_machine.CanFire(trigger))
+            throw new InvalidOperationException($"Cannot {trigger.ToString().ToLower()} appointment in {_machine.State} status");
+        
+        _machine.Fire(trigger);
+        return _machine.State;
+    }
+
     public IEnumerable<AppointmentTrigger> PermittedTriggers => _machine.PermittedTriggers;
 }
 

@@ -34,10 +34,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+var imagesPath = Path.Combine(Directory.GetCurrentDirectory(), "Images");
+
+if (!Directory.Exists(imagesPath))
+{
+    Directory.CreateDirectory(imagesPath);
+}
+
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+        imagesPath),
     RequestPath = "/images"
 });
 
