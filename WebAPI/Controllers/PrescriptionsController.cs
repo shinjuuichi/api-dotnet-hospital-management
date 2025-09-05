@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebAPI.Controllers.Base;
 using WebAPI.DTOs.Prescription;
 using WebAPI.Models.Enum;
 using WebAPI.Services.Interfaces;
@@ -10,7 +11,7 @@ namespace WebAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class PrescriptionsController(IPrescriptionService _prescriptionService) : ControllerBase
+public class PrescriptionsController(IPrescriptionService _prescriptionService) : BaseController
 {
     [HttpPost("appointments/{appointmentId}/prescriptions")]
     [Authorize(Roles = nameof(RoleEnum.Doctor))]
@@ -19,7 +20,7 @@ public class PrescriptionsController(IPrescriptionService _prescriptionService) 
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
         var prescription = await _prescriptionService.CreatePrescriptionAsync(appointmentId, request, userId);
-        return CreatedAtAction(nameof(GetPrescription), new { id = prescription.Id }, prescription);
+        return Ok(prescription);
     }
 
     [HttpGet("prescriptions")]

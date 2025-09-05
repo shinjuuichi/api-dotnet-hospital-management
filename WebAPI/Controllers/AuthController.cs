@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Controllers.Base;
 using WebAPI.DTOs.Auth;
 using WebAPI.Services.Interfaces;
 
@@ -6,7 +7,7 @@ namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController(IAuthService _authService) : ControllerBase
+public class AuthController(IAuthService _authService) : BaseController
 {
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
@@ -34,7 +35,7 @@ public class AuthController(IAuthService _authService) : ControllerBase
     {
         var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
         if (string.IsNullOrEmpty(token))
-            return BadRequest(new { message = "Token not provided" });
+            throw new ArgumentException("Token not provided");
 
         await _authService.LogoutAsync(token);
         return Ok(new { message = "Logged out successfully" });

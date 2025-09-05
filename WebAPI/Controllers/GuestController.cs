@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Controllers.Base;
 using WebAPI.Services.Interfaces;
 
 namespace WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class GuestController(ISpecialtyService _specialtyService, IDoctorService _doctorService) : ControllerBase
+public class GuestController(ISpecialtyService _specialtyService, IDoctorService _doctorService) : BaseController
 {
     [HttpGet("specialties")]
     public async Task<IActionResult> GetSpecialties()

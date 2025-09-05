@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Controllers.Base;
 using WebAPI.DTOs.Doctor;
 using WebAPI.Models.Enum;
 using WebAPI.Services.Interfaces;
@@ -9,7 +10,7 @@ namespace WebAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(Roles = nameof(RoleEnum.Manager))]
-public class DoctorsController(IDoctorService _doctorService) : ControllerBase
+public class DoctorsController(IDoctorService _doctorService) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetDoctors()
@@ -29,7 +30,7 @@ public class DoctorsController(IDoctorService _doctorService) : ControllerBase
     public async Task<IActionResult> CreateDoctor([FromBody] CreateDoctorRequestDto request)
     {
         var doctor = await _doctorService.CreateDoctorAsync(request);
-        return CreatedAtAction(nameof(GetDoctor), new { doctorId = doctor.Id }, doctor);
+        return Ok(doctor);
     }
 
     [HttpPut("{doctorId}")]

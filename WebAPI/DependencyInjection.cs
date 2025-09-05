@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using WebAPI.Data;
+using WebAPI.Filters;
 using WebAPI.Repositories.Implements;
 using WebAPI.Repositories.Interfaces;
 using WebAPI.Services.Implements;
@@ -138,7 +140,16 @@ namespace WebAPI
 
         public static IServiceCollection AddAllServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<ValidationFilter>();
+                options.Filters.Add<ResponseWrapperFilter>();
+            });
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             services.AddDatabase(configuration)
                    .AddRepositories()

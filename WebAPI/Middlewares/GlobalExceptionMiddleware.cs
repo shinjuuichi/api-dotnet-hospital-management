@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Text.Json;
 using WebAPI.Utils;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace WebAPI.Middleware;
 
@@ -42,7 +43,7 @@ public class GlobalExceptionMiddleware
             code = 0,
             data = (object?)null,
             message = string.Empty,
-            status = string.Empty
+            status = false
         };
 
         switch (exception)
@@ -55,7 +56,7 @@ public class GlobalExceptionMiddleware
                     code = statusCode,
                     data = (object?)null,
                     message = message,
-                    status = "fail"
+                    status = false
                 };
                 break;
 
@@ -65,7 +66,7 @@ public class GlobalExceptionMiddleware
                 {
                     code = 400,
                     message = exception.Message,
-                    status = "fail"
+                    status = false
                 };
                 break;
 
@@ -75,7 +76,7 @@ public class GlobalExceptionMiddleware
                 {
                     code = 401,
                     message = "Unauthorized access",
-                    status = "fail"
+                    status = false
                 };
                 break;
 
@@ -85,7 +86,7 @@ public class GlobalExceptionMiddleware
                 {
                     code = 404,
                     message = "Resource not found",
-                    status = "fail"
+                    status = false
                 };
                 break;
 
@@ -94,8 +95,9 @@ public class GlobalExceptionMiddleware
                 errorResponse = errorResponse with
                 {
                     code = 409,
+                    data = new { error = exception.Message },
                     message = exception.Message,
-                    status = "fail"
+                    status = false
                 };
                 break;
 
@@ -104,8 +106,9 @@ public class GlobalExceptionMiddleware
                 errorResponse = errorResponse with
                 {
                     code = 400,
+                    data = new { error = exception.Message },
                     message = exception.Message,
-                    status = "fail"
+                    status = false
                 };
                 break;
 
@@ -115,7 +118,7 @@ public class GlobalExceptionMiddleware
                 {
                     code = 500,
                     message = $"An internal server error occurred: {exception.Message}",
-                    status = "error"
+                    status = false
                 };
                 break;
         }

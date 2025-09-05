@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Controllers.Base;
 using WebAPI.DTOs.Medicine;
 using WebAPI.Models.Enum;
 using WebAPI.Services.Interfaces;
@@ -9,7 +10,7 @@ namespace WebAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class MedicineController(IMedicineService _medicineService) : ControllerBase
+public class MedicineController(IMedicineService _medicineService) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetMedicines()
@@ -30,7 +31,7 @@ public class MedicineController(IMedicineService _medicineService) : ControllerB
     public async Task<IActionResult> CreateMedicine([FromBody] CreateMedicineRequestDto request)
     {
         var medicine = await _medicineService.CreateMedicineAsync(request);
-        return CreatedAtAction(nameof(GetMedicine), new { id = medicine.Id }, medicine);
+        return Ok(medicine);
     }
 
     [HttpPut("{id}")]
@@ -46,6 +47,6 @@ public class MedicineController(IMedicineService _medicineService) : ControllerB
     public async Task<IActionResult> DeleteMedicine(int id)
     {
         await _medicineService.DeleteMedicineAsync(id);
-        return NoContent();
+        return Ok();
     }
 }

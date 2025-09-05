@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebAPI.Controllers.Base;
 using WebAPI.DTOs.Appointment;
 using WebAPI.Models.Enum;
 using WebAPI.Services.Interfaces;
@@ -10,7 +11,7 @@ namespace WebAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class AppointmentController(IAppointmentService _appointmentService) : ControllerBase
+public class AppointmentController(IAppointmentService _appointmentService) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetAppointments()
@@ -36,7 +37,7 @@ public class AppointmentController(IAppointmentService _appointmentService) : Co
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
         var appointment = await _appointmentService.CreateAppointmentAsync(userId, request);
-        return CreatedAtAction(nameof(GetAppointment), new { appointmentId = appointment.Id }, appointment);
+        return Ok(appointment);
     }
 
     [HttpPatch("{appointmentId}/confirm")]

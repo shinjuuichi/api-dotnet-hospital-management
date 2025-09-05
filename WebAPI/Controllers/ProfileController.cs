@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebAPI.Controllers.Base;
 using WebAPI.DTOs.User;
 using WebAPI.Services.Interfaces;
 
@@ -9,7 +10,7 @@ namespace WebAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class ProfileController(IUserService _userService) : ControllerBase
+public class ProfileController(IUserService _userService) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetProfile()

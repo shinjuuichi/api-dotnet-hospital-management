@@ -72,7 +72,10 @@ public class JWTAuthenticationMiddleware
 
         var response = new
         {
-            message
+            code = 401,
+            status = false,
+            data = (object?)null,
+            message = message
         };
 
         var json = JsonSerializer.Serialize(response, new JsonSerializerOptions

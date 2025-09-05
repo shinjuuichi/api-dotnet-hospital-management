@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Controllers.Base;
 using WebAPI.DTOs.Specialty;
 using WebAPI.Models.Enum;
 using WebAPI.Services.Interfaces;
@@ -9,7 +10,7 @@ namespace WebAPI.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class SpecialtyController(ISpecialtyService _specialtyService) : ControllerBase
+public class SpecialtyController(ISpecialtyService _specialtyService) : BaseController
 {
     [HttpGet]
     public async Task<IActionResult> GetSpecialties()
@@ -30,7 +31,7 @@ public class SpecialtyController(ISpecialtyService _specialtyService) : Controll
     public async Task<IActionResult> CreateSpecialty([FromBody] CreateSpecialtyRequestDto request)
     {
         var specialty = await _specialtyService.CreateSpecialtyAsync(request);
-        return CreatedAtAction(nameof(GetSpecialty), new { id = specialty.Id }, specialty);
+        return Ok(specialty);
     }
 
     [HttpPut("{id}")]
@@ -46,6 +47,6 @@ public class SpecialtyController(ISpecialtyService _specialtyService) : Controll
     public async Task<IActionResult> DeleteSpecialty(int id)
     {
         await _specialtyService.DeleteSpecialtyAsync(id);
-        return NoContent();
+        return Ok();
     }
 }
