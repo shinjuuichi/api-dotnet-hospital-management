@@ -24,6 +24,18 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Medicine>()
+            .Property(m => m.Price)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Prescription>()
+            .Property(p => p.TotalAmount)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<PrescriptionDetail>()
+            .Property(pd => pd.UnitPrice)
+            .HasPrecision(18, 2);
+
         UserSeed.SeedUsers(modelBuilder);
     }
 

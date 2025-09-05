@@ -168,6 +168,7 @@ namespace WebAPI.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -290,6 +291,7 @@ namespace WebAPI.Migrations
                         .HasColumnType("nvarchar(2000)");
 
                     b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -330,6 +332,7 @@ namespace WebAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("UsageInstruction")
@@ -474,7 +477,7 @@ namespace WebAPI.Migrations
                             FullName = "John Manager",
                             Gender = "Male",
                             IsDeleted = false,
-                            Password = "$2a$11$s0sd0GQcYuyxS.2zOjpwIuJT9DVIU/QYffQ/MG.Lhhg62/TJJ7Axq",
+                            Password = "$2a$11$6o4Lt31GRLuX/FqMKcNs9uYdU4l3xqPyFq.1zQjk5pUrds9/pcfwS",
                             PhoneNumber = "0900000001",
                             Role = 0
                         },
@@ -487,7 +490,7 @@ namespace WebAPI.Migrations
                             FullName = "Dr. Sarah Wilson",
                             Gender = "Female",
                             IsDeleted = false,
-                            Password = "$2a$11$rGdOXGVts98UpuUkP.ex8uYnScksEWnstWdix40LmdOpuMwTy2h/m",
+                            Password = "$2a$11$w94Pof3ctUzgr4/w2aCtye1n2ixjke..cuYXH6Owj57I72Cz9Mg3.",
                             PhoneNumber = "0900000002",
                             Role = 1
                         },
@@ -500,7 +503,7 @@ namespace WebAPI.Migrations
                             FullName = "Alice Johnson",
                             Gender = "Female",
                             IsDeleted = false,
-                            Password = "$2a$11$os3QtB38aGr5z/RsC0IFxu0SYWeyK4ISCfzjtmS7uZhLDSbALUXnS",
+                            Password = "$2a$11$ScpFUlxhhDa6zn3ea3FGK.aaYdwMtwrDe/WIPoIS7Rc70QfnI0rwm",
                             PhoneNumber = "0900000003",
                             Role = 2
                         });

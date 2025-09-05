@@ -21,7 +21,7 @@ namespace WebAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -177,7 +177,7 @@ namespace WebAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Notes = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     AppointmentId = table.Column<int>(type: "int", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ModificationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -201,7 +201,7 @@ namespace WebAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     UsageInstruction = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     MedicineId = table.Column<int>(type: "int", nullable: false),
                     PrescriptionId = table.Column<int>(type: "int", nullable: false),
@@ -252,9 +252,9 @@ namespace WebAPI.Migrations
                 columns: new[] { "Id", "Avatar", "CreationDate", "DateOfBirth", "DeletionDate", "Email", "FullName", "Gender", "IsDeleted", "ModificationDate", "Password", "PhoneNumber", "Role" },
                 values: new object[,]
                 {
-                    { 1, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1980, 5, 12), null, "manager@gmail.com", "John Manager", "Male", false, null, "$2a$11$s0sd0GQcYuyxS.2zOjpwIuJT9DVIU/QYffQ/MG.Lhhg62/TJJ7Axq", "0900000001", 0 },
-                    { 2, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1985, 6, 15), null, "sarah.wilson@hospital.com", "Dr. Sarah Wilson", "Female", false, null, "$2a$11$rGdOXGVts98UpuUkP.ex8uYnScksEWnstWdix40LmdOpuMwTy2h/m", "0900000002", 1 },
-                    { 3, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1995, 3, 20), null, "alice.johnson@email.com", "Alice Johnson", "Female", false, null, "$2a$11$os3QtB38aGr5z/RsC0IFxu0SYWeyK4ISCfzjtmS7uZhLDSbALUXnS", "0900000003", 2 }
+                    { 1, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1980, 5, 12), null, "manager@gmail.com", "John Manager", "Male", false, null, "$2a$11$6o4Lt31GRLuX/FqMKcNs9uYdU4l3xqPyFq.1zQjk5pUrds9/pcfwS", "0900000001", 0 },
+                    { 2, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1985, 6, 15), null, "sarah.wilson@hospital.com", "Dr. Sarah Wilson", "Female", false, null, "$2a$11$w94Pof3ctUzgr4/w2aCtye1n2ixjke..cuYXH6Owj57I72Cz9Mg3.", "0900000002", 1 },
+                    { 3, null, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), new DateOnly(1995, 3, 20), null, "alice.johnson@email.com", "Alice Johnson", "Female", false, null, "$2a$11$ScpFUlxhhDa6zn3ea3FGK.aaYdwMtwrDe/WIPoIS7Rc70QfnI0rwm", "0900000003", 2 }
                 });
 
             migrationBuilder.InsertData(
