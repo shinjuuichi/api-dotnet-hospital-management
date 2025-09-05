@@ -65,6 +65,7 @@ public class GlobalExceptionMiddleware
                 errorResponse = errorResponse with
                 {
                     code = 400,
+                    data = new { error = exception.Message },
                     message = exception.Message,
                     status = false
                 };
@@ -75,6 +76,7 @@ public class GlobalExceptionMiddleware
                 errorResponse = errorResponse with
                 {
                     code = 401,
+                    data = new { error = exception.Message },
                     message = "Unauthorized access",
                     status = false
                 };
@@ -85,6 +87,7 @@ public class GlobalExceptionMiddleware
                 errorResponse = errorResponse with
                 {
                     code = 404,
+                    data = new { error = exception.Message },
                     message = "Resource not found",
                     status = false
                 };
