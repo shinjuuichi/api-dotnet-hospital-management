@@ -92,5 +92,4 @@ public class UserDto
     public int Gender { get; set; }
     public int Role { get; set; }
     public string? Avatar { get; set; }
-    public bool IsVerified { get; set; }
 }
