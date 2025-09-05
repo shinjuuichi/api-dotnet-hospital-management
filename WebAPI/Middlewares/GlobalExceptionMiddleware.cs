@@ -53,6 +53,7 @@ public class GlobalExceptionMiddleware
                 errorResponse = errorResponse with
                 {
                     code = statusCode,
+                    data = (object?)null,
                     message = message,
                     status = "fail"
                 };
@@ -93,6 +94,16 @@ public class GlobalExceptionMiddleware
                 errorResponse = errorResponse with
                 {
                     code = 409,
+                    message = exception.Message,
+                    status = "fail"
+                };
+                break;
+
+            case InvalidOperationException:
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                errorResponse = errorResponse with
+                {
+                    code = 400,
                     message = exception.Message,
                     status = "fail"
                 };

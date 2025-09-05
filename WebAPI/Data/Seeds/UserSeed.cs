@@ -28,7 +28,6 @@ namespace WebAPI.Data.Seeds
                     DateOfBirth = new DateOnly(1980, 5, 12),
                     Gender = GenderEnum.Male,
                     Role = RoleEnum.Manager,
-                    IsVerified = true,
                     CreationDate = seededAt,
                 },
                 new User
@@ -41,7 +40,6 @@ namespace WebAPI.Data.Seeds
                     DateOfBirth = new DateOnly(1985, 6, 15),
                     Gender = GenderEnum.Female,
                     Role = RoleEnum.Doctor,
-                    IsVerified = true,
                     CreationDate = seededAt,
                 },
                 new User
@@ -54,7 +52,6 @@ namespace WebAPI.Data.Seeds
                     DateOfBirth = new DateOnly(1995, 3, 20),
                     Gender = GenderEnum.Female,
                     Role = RoleEnum.Customer,
-                    IsVerified = true,
                     CreationDate = seededAt,
                 }
             );

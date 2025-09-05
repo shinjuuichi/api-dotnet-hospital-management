@@ -25,8 +25,6 @@ public class User : AuditableEntity
     [StringLength(255, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
     public string Password { get; set; } = string.Empty;
 
-    public bool IsVerified { get; set; }
-
     [Required(ErrorMessage = "Phone number is required")]
     [Phone(ErrorMessage = "Please enter a valid phone number")]
     [StringLength(15, MinimumLength = 10, ErrorMessage = "Phone number must be between 10 and 15 characters")]

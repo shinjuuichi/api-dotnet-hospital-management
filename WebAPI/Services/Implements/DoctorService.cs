@@ -139,7 +139,6 @@ public class DoctorService : IDoctorService
             DateOfBirth = request.DateOfBirth,
             Gender = (GenderEnum)request.Gender,
             Role = RoleEnum.Doctor,
-            IsVerified = true
         };
 
         await _userRepository.AddAsync(user);

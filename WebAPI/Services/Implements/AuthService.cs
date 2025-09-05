@@ -26,6 +26,11 @@ public class AuthService : IAuthService
 
     public async Task<string> RegisterAsync(RegisterRequestDto request)
     {
+        var existingUser = await _userRepository
+            .GetByConditionAsync(u => u.Email == request.Email);
+        if (existingUser != null)
+            throw new InvalidOperationException("Email already in use");
+
         var otp = OtpGenerator.GenerateOtp();
 
         var registrationData = new
@@ -77,7 +82,6 @@ public class AuthService : IAuthService
             DateOfBirth = DateOnly.FromDateTime(registrationData.GetProperty("DateOfBirth").GetDateTime()),
             Gender = (GenderEnum)registrationData.GetProperty("Gender").GetInt32(),
             Role = RoleEnum.Customer,
-            IsVerified = true
         };
 
         await _userRepository.AddAsync(user);
@@ -110,7 +114,6 @@ public class AuthService : IAuthService
                 Gender = (int)user.Gender,
                 Role = (int)user.Role,
                 Avatar = user.Avatar,
-                IsVerified = user.IsVerified
             }
         };
     }
@@ -122,9 +125,6 @@ public class AuthService : IAuthService
 
         if (user == null || !CryptoPassword.IsPasswordCorrect(user.Password, request.Password))
             throw new UnauthorizedAccessException("Invalid email or password");
-
-        if (!user.IsVerified)
-            throw new UnauthorizedAccessException("Account not verified");
 
         if (user.IsDeleted)
             throw new UnauthorizedAccessException("Account has been deactivated");
@@ -144,7 +144,6 @@ public class AuthService : IAuthService
                 Gender = (int)user.Gender,
                 Role = (int)user.Role,
                 Avatar = user.Avatar,
-                IsVerified = user.IsVerified
             }
         };
     }
