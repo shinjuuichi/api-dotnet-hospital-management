@@ -38,7 +38,7 @@ public class AppointmentService : IAppointmentService
             else if (role == (int)RoleEnum.Doctor)
             {
                 var doctor = await _doctorRepository
-                    .GetByIdAsync(userId.Value);
+                    .GetByConditionAsync(d => d.UserId == userId.Value);
                 if (doctor != null)
                 {
                     query = query.Where(a => a.DoctorId == doctor.Id);
@@ -129,7 +129,8 @@ public class AppointmentService : IAppointmentService
 
     public async Task<AppointmentResponseDto> CreateAppointmentAsync(int userId, CreateAppointmentRequestDto request)
     {
-        var patient = await _patientRepository.GetByIdAsync(userId);
+        var patient = await _patientRepository
+             .GetByConditionAsync(p => p.UserId == userId);
 
         if (patient == null)
             throw new InvalidOperationException("Patient profile not found");
@@ -218,7 +219,7 @@ public class AppointmentService : IAppointmentService
         if (appointment == null)
             throw new InvalidOperationException("Appointment not found");
 
-        var doctor = await _doctorRepository.GetByIdAsync(userId);
+        var doctor = await _doctorRepository.GetByConditionAsync(d => d.UserId == userId);
 
         if (doctor == null || appointment.DoctorId != doctor.Id)
             throw new UnauthorizedAccessException("You can only complete appointments assigned to you");

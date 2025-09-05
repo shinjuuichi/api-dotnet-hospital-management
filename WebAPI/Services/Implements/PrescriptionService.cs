@@ -139,17 +139,13 @@ public class PrescriptionService : IPrescriptionService
 
     public async Task<PrescriptionResponseDto> CreatePrescriptionAsync(int appointmentId, CreatePrescriptionRequestDto request, int userId)
     {
-        // Get doctor by user ID
         var doctor = await _doctorRepository
             .GetByConditionAsync(d => d.UserId == userId);
-        
         if (doctor == null)
             throw new InvalidOperationException("Doctor profile not found");
 
-        // Verify appointment exists and belongs to the doctor
-        var appointment = await _appointmentRepository
-            .GetByIdAsync(appointmentId, new[] { "Doctor", "Prescription" });
-
+        string[] includes = { "Doctor", "Prescription" };
+        var appointment = await _appointmentRepository.GetByIdAsync(appointmentId, includes);
         if (appointment == null)
             throw new InvalidOperationException("Appointment not found");
 
@@ -162,15 +158,12 @@ public class PrescriptionService : IPrescriptionService
         if (appointment.Prescription != null)
             throw new InvalidOperationException("Prescription already exists for this appointment");
 
-        // Verify all medicines exist
         var medicineIds = request.Details.Select(d => d.MedicineId).ToList();
-        var medicines = await _medicineRepository
-            .GetAllAsync(m => medicineIds.Contains(m.Id));
+        var medicines = await _medicineRepository.GetAllAsync(m => medicineIds.Contains(m.Id));
 
         if (medicines.Count != medicineIds.Count)
             throw new InvalidOperationException("One or more medicines not found");
 
-        // Create prescription
         var prescription = new Prescription
         {
             AppointmentId = appointmentId,
@@ -180,7 +173,6 @@ public class PrescriptionService : IPrescriptionService
         await _prescriptionRepository.AddAsync(prescription);
         await _unitOfWork.SaveChangeAsync();
 
-        // Create prescription details
         decimal totalAmount = 0;
         foreach (var detailRequest in request.Details)
         {
@@ -198,7 +190,6 @@ public class PrescriptionService : IPrescriptionService
             await _prescriptionDetailRepository.AddAsync(detail);
         }
 
-        // Update total amount using the method
         prescription.UpdateTotalAmount(totalAmount);
 
         _prescriptionRepository.Update(prescription);
