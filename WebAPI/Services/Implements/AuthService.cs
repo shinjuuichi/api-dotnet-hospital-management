@@ -26,12 +26,6 @@ public class AuthService : IAuthService
 
     public async Task<string> RegisterAsync(RegisterRequestDto request)
     {
-        var existingUser = await _userRepository
-            .GetByConditionAsync(u => u.Email == request.Email);
-
-        if (existingUser != null)
-            throw new InvalidOperationException("Email already registered");
-
         var otp = OtpGenerator.GenerateOtp();
 
         var registrationData = new

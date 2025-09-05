@@ -1,5 +1,8 @@
 using System.Net;
 using System.Text.Json;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Utils;
 
 namespace WebAPI.Middleware;
 
@@ -44,6 +47,17 @@ public class GlobalExceptionMiddleware
 
         switch (exception)
         {
+            case DbUpdateException dbEx when dbEx.InnerException is SqlException sqlEx:
+                var (statusCode, message) = SqlExceptionHandler.HandleSqlException(sqlEx);
+                response.StatusCode = statusCode;
+                errorResponse = errorResponse with
+                {
+                    code = statusCode,
+                    message = message,
+                    status = "fail"
+                };
+                break;
+
             case ArgumentException:
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 errorResponse = errorResponse with
